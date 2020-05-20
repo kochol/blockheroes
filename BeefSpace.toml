@@ -1,0 +1,5 @@
+FileVersion = 1
+Projects = {block-heroes = {Path = "."}, Ariyana_beef = {Path = "../Ariyana_beef"}}
+
+[Workspace]
+StartupProject = "block-heroes"

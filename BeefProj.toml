@@ -1,0 +1,7 @@
+FileVersion = 1
+Dependencies = {corlib = "*", Ariyana_beef = "*"}
+
+[Project]
+Name = "block-heroes"
+StartupObject = "bh.Program"
+DefaultNamespace = "bh"

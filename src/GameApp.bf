@@ -1,5 +1,6 @@
 using ari;
 using bh.game;
+using System;
 
 namespace bh
 {
@@ -44,6 +45,10 @@ namespace bh
 		public override void OnEvent(ari_event* _event, ref WindowHandle _handle)
 		{
 			base.OnEvent(_event, ref _handle);
+			if (_event.type == .ARI_EVENTTYPE_KEY_DOWN)
+			{
+				map.HandleInput(.RotateCW);
+			}
 		}
 
 		public override void OnCleanup()

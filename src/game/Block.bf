@@ -29,7 +29,7 @@ namespace bh.game
 		Direction direction = .North;
 		const float BlockSize = 32.0f;
 		Sprite2D[] sprites = new Sprite2D[4];
-		static TextureHandle block_texture;
+		static TextureHandle block_texture = .();
 
 		this(EntityHandle _handle) : base(_handle)
 		{

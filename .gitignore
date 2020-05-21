@@ -3,3 +3,5 @@ build/
 
 # files
 BeefSpace_User.toml
+.fips-imports.cmake
+*.ktx

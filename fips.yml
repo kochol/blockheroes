@@ -1,0 +1,10 @@
+#
+# sky heroes
+#
+
+---
+imports:
+    sokol:
+        git: https://github.com/floooh/sokol.git
+    ariyana:
+        git: https://github.com/kochol/ariyana.git

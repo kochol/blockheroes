@@ -5,9 +5,9 @@ namespace bh.game
 {
 	public class Map
 	{
-		bool[,] data = new bool[10,20];
+		bool[,] data = new bool[10,20] ~ delete _;
 		World world = null;
-		List<Block> blocks = new List<Block>();
+		List<Block> blocks = new List<Block>() ~ DeleteContainerAndItems!(_);
 
 		enum GameState
 		{
@@ -26,7 +26,10 @@ namespace bh.game
 		{
 			if (state == .NeedNewBlock)
 			{
-
+				Block b = World.CreateEntity<Block>();
+				b.Init(world, .Box);
+				blocks.Add(b);
+				state = .BlockIsDropping;
 			}
 		}
 	}

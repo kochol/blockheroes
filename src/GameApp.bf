@@ -49,6 +49,12 @@ namespace bh
 			{
 				if (_event.key_code == .ARI_KEYCODE_UP)
 					map.HandleInput(.RotateCW);
+				if (_event.key_code == .ARI_KEYCODE_LEFT)
+					map.HandleInput(.Left);
+				if (_event.key_code == .ARI_KEYCODE_RIGHT)
+					map.HandleInput(.Right);
+				if (_event.key_code == .ARI_KEYCODE_DOWN)
+					map.HandleInput(.Down);
 			}
 		}
 

@@ -247,6 +247,9 @@ namespace bh.game
 				case .South: direction = .East;
 				case .West: direction = .South;
 				}
+			case .Down: position.y = 18.0f;
+			case .Left: position.x -= 1.0f;
+			case .Right: position.x += 1.0f;
 			default:
 			}
 

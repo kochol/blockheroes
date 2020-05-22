@@ -12,7 +12,8 @@ namespace bh.game
 		List<Block> blocks = new List<Block>() ~ DeleteContainerAndItems!(_);
 		Block active_block;
 		float time = 0;
-		float key_time = 0; 
+		float key_time = 0;
+		KeyType last_key = .Drop;
 		const float UpdateTime = 0.5f;
 		const float KeyUpdateDelay = 0.1f;
 
@@ -45,7 +46,7 @@ namespace bh.game
 			if (state == .NeedNewBlock)
 			{
 				active_block = World.CreateEntity<Block>();
-				active_block.Init(world, .L, Vector2(5, 10));
+				active_block.Init(world, .L, Vector2(5, 18));
 				blocks.Add(active_block);
 				state = .BlockIsDropping;
 				time = 0;
@@ -57,13 +58,20 @@ namespace bh.game
 			if (time < UpdateTime)
 				return;
 			time = 0;
+
+			// drop the block
+			active_block.HandleInput(.Down);
 		}
 
 		public void HandleInput(KeyType _key)
 		{
-			if (key_time < KeyUpdateDelay)
+			if (key_time < KeyUpdateDelay && last_key == _key)
 				return;
 			key_time = 0;
+			if (_key == .Down)
+				time = 0;
+			last_key = _key;
+
 			active_block.HandleInput(_key);
 		}
 	}

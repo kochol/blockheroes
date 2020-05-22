@@ -10,8 +10,7 @@ namespace bh.game
 		T,
 		L,
 		RL,
-		I,
-		BlockLine
+		I
 	}
 
 	public enum Direction
@@ -51,7 +50,8 @@ namespace bh.game
 		{
 			delete blocks;
 			for (int i = 0; i < 4; i++)
-				delete sprites[i];
+				if (sprites[i] != null)
+					delete sprites[i];
 			delete sprites;
 		}
 
@@ -198,9 +198,6 @@ namespace bh.game
 					blocks[2].y = 0.0f;						//	   [3]
 					blocks[3].y = -1;
 				}
-			case .BlockLine:
-				// TODO: add block line type
-				System.Runtime.NotImplemented();
 			}
 
 			// Set the sprite pos
@@ -263,10 +260,7 @@ namespace bh.game
 			if (map.Collide(blocks, position))
 			{
 				// it collide something
-				if (_key == .Down)
-				{
-					// It reaches bottom of map
-				}
+
 				// Revert position
 				switch (_key)
 				{
@@ -293,6 +287,13 @@ namespace bh.game
 				}
 
 				UpdateBlockPos();
+
+				if (_key == .Down)
+				{
+					// It reaches bottom of map
+					map.BlockReachedToEnd();
+				}
+
 			}
 		}
 	}

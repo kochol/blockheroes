@@ -1,5 +1,6 @@
 using ari;
 using System.Collections;
+using System;
 
 namespace bh.game
 {
@@ -9,8 +10,12 @@ namespace bh.game
 		World world = null;
 		Entity map_entity;
 		Camera2D camera;
-		List<Block> blocks = new List<Block>() ~ DeleteContainerAndItems!(_);
-		Block active_block;
+		List<Sprite2D> blocks = new List<Sprite2D>() ~ DeleteContainerAndItems!(_);
+		Block active_block = null;
+
+		Random rnd = new Random();
+
+		// time values
 		float time = 0;
 		float key_time = 0;
 		KeyType last_key = .Drop;
@@ -29,6 +34,7 @@ namespace bh.game
 		{
 			delete map_entity;
 			delete camera;
+			delete rnd;
 		}
 
 		public void Init(World _world)
@@ -61,9 +67,12 @@ namespace bh.game
 		{
 			if (state == .NeedNewBlock)
 			{
+				if (active_block != null)
+					delete active_block;
+
+				BlockType bt = (BlockType)rnd.Next(7);
 				active_block = World.CreateEntity<Block>();
-				active_block.Init(world, .L, Vector2(5, 18), this);
-				blocks.Add(active_block);
+				active_block.Init(world, bt, Vector2(5, 18), this);
 				state = .BlockIsDropping;
 				time = 0;
 				return;
@@ -89,6 +98,20 @@ namespace bh.game
 			last_key = _key;
 
 			active_block.HandleInput(_key);
+		}
+
+		public void BlockReachedToEnd()
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				Vector2 p = active_block.[Friend]blocks[i] + active_block.[Friend]position;
+				int x = int(p.x);
+				int y = int(p.y);
+				data[x, y] = true;
+				blocks.Add(active_block.[Friend]sprites[i]);
+				active_block.[Friend]sprites[i] = null;
+			}
+			state = .NeedNewBlock;
 		}
 	}
 }

@@ -47,7 +47,8 @@ namespace bh
 			base.OnEvent(_event, ref _handle);
 			if (_event.type == .ARI_EVENTTYPE_KEY_DOWN)
 			{
-				map.HandleInput(.RotateCW);
+				if (_event.key_code == .ARI_KEYCODE_UP)
+					map.HandleInput(.RotateCW);
 			}
 		}
 

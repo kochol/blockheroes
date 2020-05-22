@@ -69,8 +69,7 @@ namespace bh.game
 				{
 					blocks[0].x = blocks[1].x = 0;			//	   [0]
 					blocks[2].x = blocks[3].x = -1;			//	[2][1]
-					blocks[0].x = 1.0f;						//  [3]
-					blocks[1].y = blocks[2].y = 0.0f;
+					blocks[1].y = blocks[2].y = 0.0f;		//  [3]
 					blocks[3].y = -1;
 				}
 			case .RZ:
@@ -86,8 +85,7 @@ namespace bh.game
 				{
 					blocks[3].x = blocks[2].x = 0;			//	   [3]
 					blocks[1].x = blocks[0].x = 1;			//	   [2][1]
-					blocks[3].x = 1.0f;						//  	  [0]
-					blocks[1].y = blocks[2].y = 0.0f;
+					blocks[1].y = blocks[2].y = 0.0f;		//  	  [0]
 					blocks[0].y = -1;
 				}
 			case .T:
@@ -114,9 +112,9 @@ namespace bh.game
 				case .West:
 					blocks[0].x = blocks[1].x = blocks[2].x =  0;					
 					blocks[3].x = 1;						//	   [0]
-					blocks[0].y = 2;						//     [1][3]
-					blocks[1].y = blocks[3].y = 1;			//     [2]
-					blocks[2].y = 0;
+					blocks[0].y = 1;						//     [1][3]
+					blocks[1].y = blocks[3].y = 0;			//     [2]
+					blocks[2].y = -1;
 				}
 			case .L:
 				switch (direction)

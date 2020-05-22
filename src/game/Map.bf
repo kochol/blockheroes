@@ -34,6 +34,8 @@ namespace bh.game
 		{
 			world = _world;
 			camera = World.CreateCamera2D();
+			camera.Position.x = -160;
+			camera.Position.y = -320;
 			map_entity = World.CreateEntity();
 			world.AddComponent(map_entity, camera);
 		}
@@ -43,7 +45,7 @@ namespace bh.game
 			if (state == .NeedNewBlock)
 			{
 				active_block = World.CreateEntity<Block>();
-				active_block.Init(world, .L);
+				active_block.Init(world, .L, Vector2(5, 10));
 				blocks.Add(active_block);
 				state = .BlockIsDropping;
 				time = 0;

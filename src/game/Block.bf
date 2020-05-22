@@ -27,9 +27,15 @@ namespace bh.game
 		Vector2[] blocks = new Vector2[4];
 		BlockType block_type;
 		Direction direction = .North;
+
 		const float BlockSize = 32.0f;
+		const float BlockSizeHalf = BlockSize / 2.0f;
+
 		Sprite2D[] sprites = new Sprite2D[4];
 		static TextureHandle block_texture = .();
+
+		// Block position
+		Vector2 position;
 
 		this(EntityHandle _handle) : base(_handle)
 		{
@@ -150,9 +156,9 @@ namespace bh.game
 				case .North:
 					blocks[0].x = blocks[1].x = blocks[2].x = 0.0f;
 					blocks[3].x = -1.0f;					//	   [0]
-					blocks[0].y = 2.0f;						//	   [1]
-					blocks[1].y = 1.0f;						// 	[3][2]
-					blocks[2].y = blocks[3].y = 0.0f;
+					blocks[0].y = 1.0f;						//	   [1]
+					blocks[1].y = 0.0f;						// 	[3][2]
+					blocks[2].y = blocks[3].y = -1.0f;
 				case .East:
 					blocks[0].x = 1;						//	[3]
 					blocks[1].x = 0;						//	[2][1][0]
@@ -197,13 +203,14 @@ namespace bh.game
 
 			// Set the sprite pos
 			for (int i = 0; i < 4; i++)
-				*sprites[i].Position = blocks[i] * BlockSize;
+				*sprites[i].Position = (blocks[i] + position) * BlockSize + BlockSizeHalf;
 		}
 
 		// Create components, Add them to world
-		public void Init(World _world, BlockType _block_type)
+		public void Init(World _world, BlockType _block_type, Vector2 _pos)
 		{
 			block_type = _block_type;
+			position = _pos;
 
 			// Create components
 			for (int i = 0; i < 4; i++)

@@ -55,6 +55,8 @@ namespace bh
 					map.HandleInput(.Right);
 				if (_event.key_code == .ARI_KEYCODE_DOWN)
 					map.HandleInput(.Down);
+				if (_event.key_code == .ARI_KEYCODE_SPACE)
+					map.HandleInput(.Drop);
 			}
 		}
 

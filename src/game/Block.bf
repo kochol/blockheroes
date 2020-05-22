@@ -37,6 +37,8 @@ namespace bh.game
 		// Block position
 		Vector2 position;
 
+		Map map;
+
 		this(EntityHandle _handle) : base(_handle)
 		{
 			if (block_texture.Handle == uint32.MaxValue)
@@ -207,10 +209,11 @@ namespace bh.game
 		}
 
 		// Create components, Add them to world
-		public void Init(World _world, BlockType _block_type, Vector2 _pos)
+		public void Init(World _world, BlockType _block_type, Vector2 _pos, Map _map)
 		{
 			block_type = _block_type;
 			position = _pos;
+			map = _map;
 
 			// Create components
 			for (int i = 0; i < 4; i++)
@@ -247,13 +250,50 @@ namespace bh.game
 				case .South: direction = .East;
 				case .West: direction = .South;
 				}
-			case .Down: position.y = 18.0f;
+			case .Down: position.y -= 1.0f;
 			case .Left: position.x -= 1.0f;
 			case .Right: position.x += 1.0f;
+			case .Drop: position.y = 18.0f;
 			default:
 			}
 
 			UpdateBlockPos();
+
+			// check for collision
+			if (map.Collide(blocks, position))
+			{
+				// it collide something
+				if (_key == .Down)
+				{
+					// It reaches bottom of map
+				}
+				// Revert position
+				switch (_key)
+				{
+				case .RotateCW:
+					switch (direction)
+					{
+					case .North: direction = .West;
+					case .East: direction = .North;
+					case .South: direction = .East;
+					case .West: direction = .South;
+					}
+				case .RotateCCW:
+					switch (direction)
+					{
+					case .North: direction = .East;
+					case .East: direction = .South;
+					case .South: direction = .West;
+					case .West: direction = .North;
+					}
+				case .Down: position.y += 1.0f;
+				case .Left: position.x += 1.0f;
+				case .Right: position.x -= 1.0f;
+				default:
+				}
+
+				UpdateBlockPos();
+			}
 		}
 	}
 }

@@ -41,12 +41,28 @@ namespace bh.game
 			world.AddComponent(map_entity, camera);
 		}
 
+		public bool Collide(Vector2[] block_pos, Vector2 _pos)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				Vector2 p = block_pos[i] + _pos;
+				int x = int(p.x);
+				int y = int(p.y);
+				if (x < 0 || x > 9 ||
+					y < 0 || y > 19 ||
+					data[x, y])
+					return true;
+			}
+
+			return false;
+		}
+
 		public void Update(float _elasped_time)
 		{
 			if (state == .NeedNewBlock)
 			{
 				active_block = World.CreateEntity<Block>();
-				active_block.Init(world, .L, Vector2(5, 18));
+				active_block.Init(world, .L, Vector2(5, 18), this);
 				blocks.Add(active_block);
 				state = .BlockIsDropping;
 				time = 0;

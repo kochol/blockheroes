@@ -35,6 +35,7 @@ namespace bh.game
 			delete map_entity;
 			delete camera;
 			delete rnd;
+			delete active_block;
 		}
 
 		public void Init(World _world)

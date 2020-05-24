@@ -6,11 +6,10 @@ namespace bh.game
 {
 	public class Map
 	{
-		bool[,] data = new bool[10,20] ~ delete _;
+		Sprite2D[,] data = new Sprite2D[10,20] ~ delete _;
 		World world = null;
 		Entity map_entity;
 		Camera2D camera;
-		List<Sprite2D> blocks = new List<Sprite2D>() ~ DeleteContainerAndItems!(_);
 		Block active_block = null;
 
 		Random rnd = new Random();
@@ -40,6 +39,13 @@ namespace bh.game
 
 		public void Init(World _world)
 		{
+			for (int i = 0; i < 10; i++)
+			{
+				for (int j = 0; j < 20; j++)
+				{
+					data[i, j] = null;
+				}
+			}
 			world = _world;
 			camera = World.CreateCamera2D();
 			camera.Position.x = -160;
@@ -57,7 +63,7 @@ namespace bh.game
 				int y = int(p.y);
 				if (x < 0 || x > 9 ||
 					y < 0 || y > 19 ||
-					data[x, y])
+					data[x, y] != null)
 					return true;
 			}
 
@@ -108,11 +114,31 @@ namespace bh.game
 				Vector2 p = active_block.[Friend]blocks[i] + active_block.[Friend]position;
 				int x = int(p.x);
 				int y = int(p.y);
-				data[x, y] = true;
-				blocks.Add(active_block.[Friend]sprites[i]);
+				data[x, y] = active_block.[Friend]sprites[i];
+				world.RemoveComponent(active_block, active_block.[Friend]sprites[i], false);
+				world.AddComponent(map_entity, data[x, y]);
 				active_block.[Friend]sprites[i] = null;
 			}
 			state = .NeedNewBlock;
+
+			// check for line clean up
+			for (int j = 0; j < 20; j++)
+			{
+				for (int i = 0; i < 10; i++)
+				{
+					if (data[i, j] == null)
+						break;
+					if (i == 9)
+					{
+						// the line is full delete it
+						for (int di = 0; di < 10; di++)
+						{
+							world.RemoveComponent(map_entity, data[di, j], true);
+							data[di, j] = null;
+						}
+					}
+				}
+			}
 		}
 	}
 }

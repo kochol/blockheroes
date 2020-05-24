@@ -107,6 +107,24 @@ namespace bh.game
 			active_block.HandleInput(_key);
 		}
 
+		void MoveBlocks(int y, bool down)
+		{
+			float dy = -Block.[Friend]BlockSize;
+
+			for (int j = y; j < 20; j++)
+			{
+				for (int i = 0; i < 10; i++)
+				{
+					if (data[i, j] != null)
+					{
+						data[i, j].Position.y += dy;
+						data[i, j - 1] = data[i, j];
+						data[i, j] = null;
+					}
+				}
+			}
+		}
+
 		public void BlockReachedToEnd()
 		{
 			for (int i = 0; i < 4; i++)
@@ -136,6 +154,9 @@ namespace bh.game
 							world.RemoveComponent(map_entity, data[di, j], true);
 							data[di, j] = null;
 						}
+
+						MoveBlocks(j + 1, true);
+						j--;
 					}
 				}
 			}

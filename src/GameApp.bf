@@ -6,13 +6,13 @@ namespace bh
 {
 	public class GameApp: Application
 	{
-		// Engine stuffs
+		// Engine stuff
 		World world = new World();
 		RenderSystem2D render_system = new RenderSystem2D();
 		SceneSystem2D scene_system = new SceneSystem2D();
 		FileSystemLocal _fs = new FileSystemLocal();
 
-		// Game stuffs
+		// Game stuff
 		Map map = new Map();
 
 		public this()

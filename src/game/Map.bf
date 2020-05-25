@@ -86,8 +86,9 @@ namespace bh.game
 					delete active_block;
 
 				BlockType bt = (BlockType)rnd.Next(7);
+				ColorType blockClr = (ColorType)rnd.Next(3);
 				active_block = World.CreateEntity<Block>();
-				active_block.Init(world, bt, Vector2(5, 18), this);
+				active_block.Init(world, bt, blockClr, Vector2(5, 18), this);
 				state = .BlockIsDropping;
 				time = 0;
 				return;

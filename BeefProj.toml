@@ -5,3 +5,20 @@ Dependencies = {corlib = "*", Ariyana_beef = "*"}
 Name = "block-heroes"
 StartupObject = "bh.Program"
 DefaultNamespace = "bh"
+
+[Configs.Debug.armv7-none-linux-android21]
+BuildKind = "StaticLib"
+TargetName = "lib$(ProjectName)"
+RelocType = "PIC"
+
+[Configs.Release.armv7-none-linux-android21]
+BuildKind = "StaticLib"
+RelocType = "PIC"
+
+[Configs.Paranoid.armv7-none-linux-android21]
+BuildKind = "StaticLib"
+RelocType = "PIC"
+
+[Configs.Test.armv7-none-linux-android21]
+BuildKind = "StaticLib"
+RelocType = "PIC"

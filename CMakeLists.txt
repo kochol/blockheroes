@@ -24,6 +24,11 @@ fips_setup(PROJECT block_heroes)
             main.cpp
         )
 
+if (FIPS_ANDROID)
+        link_directories(${CMAKE_SOURCE_DIR}/libs)
+        fips_libs(block-heroes cari BeefRT ffi GLESv3 EGL android log)
+endif()
+
     fips_end_app()
 
     ari_proj(block_heroes)

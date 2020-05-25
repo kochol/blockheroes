@@ -227,7 +227,8 @@ namespace bh.game
 			_world.AddEntity(this);
 		}
 
-		public void HandleInput(KeyType _key)
+		// return false when reach the end of map
+		public bool HandleInput(KeyType _key)
 		{
 			switch (_key)
 			{
@@ -250,7 +251,7 @@ namespace bh.game
 			case .Down: position.y -= 1.0f;
 			case .Left: position.x -= 1.0f;
 			case .Right: position.x += 1.0f;
-			case .Drop: position.y = 18.0f;
+			case .Drop: while (HandleInput(.Down)) { }
 			default:
 			}
 
@@ -292,9 +293,12 @@ namespace bh.game
 				{
 					// It reaches bottom of map
 					map.BlockReachedToEnd();
+					return false;
 				}
 
 			}
+
+			return true;
 		}
 	}
 }

@@ -11,6 +11,9 @@ namespace bh
 		RenderSystem2D render_system = new RenderSystem2D();
 		SceneSystem2D scene_system = new SceneSystem2D();
 		FileSystemLocal _fs = new FileSystemLocal();
+		float touch_x;
+		float touch_y;
+		bool MovedWithTouch;
 
 		// Game stuffs
 		Map map = new Map();
@@ -58,6 +61,41 @@ namespace bh
 					map.HandleInput(.Down);
 				if (_event.key_code == .ARI_KEYCODE_SPACE)
 					map.HandleInput(.Drop);
+			}
+			else if (_event.type == .ARI_EVENTTYPE_TOUCHES_BEGAN)
+			{
+				touch_x = _event.touches[0].pos_x;
+				touch_y = _event.touches[0].pos_y;
+				MovedWithTouch = false;
+			}
+			else if (_event.type == .ARI_EVENTTYPE_TOUCHES_MOVED)
+			{
+				float dx = touch_x - _event.touches[0].pos_x;
+				float dy = touch_y - _event.touches[0].pos_y;
+				int w = (_event.window_width - 640) / 10;
+				if (dx > w)
+				{
+					touch_x = _event.touches[0].pos_x;
+					map.HandleInput(.Left);
+					MovedWithTouch = true;
+				}
+				if (dx < -w)
+				{
+					touch_x = _event.touches[0].pos_x;
+					map.HandleInput(.Right);
+					MovedWithTouch = true;
+				}
+			}
+			else if (_event.type == .ARI_EVENTTYPE_TOUCHES_ENDED)
+			{
+				if (MovedWithTouch)
+					return;
+				float dx = touch_x - _event.touches[0].pos_x;
+				float dy = touch_y - _event.touches[0].pos_y;
+				if (dy < -200 && Math.Abs(dx) < 64)
+					map.HandleInput(.Drop);
+				else if (Math.Abs(dx) < 32)
+					map.HandleInput(.RotateCW);
 			}
 		}
 

@@ -108,6 +108,9 @@ namespace bh.game
 
 		public void HandleInput(KeyType _key)
 		{
+			if (state != .BlockIsDropping)
+				return;
+
 			if (key_time < KeyUpdateDelay && last_key == _key)
 				return;
 			key_time = 0;

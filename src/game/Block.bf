@@ -251,7 +251,7 @@ namespace bh.game
 			case .Down: position.y -= 1.0f;
 			case .Left: position.x -= 1.0f;
 			case .Right: position.x += 1.0f;
-			case .Drop: while (HandleInput(.Down)) { }
+			case .Drop: while (HandleInput(.Down)) { } return false;
 			default:
 			}
 

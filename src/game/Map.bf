@@ -24,7 +24,8 @@ namespace bh.game
 		enum GameState
 		{
 			NeedNewBlock,
-			BlockIsDropping
+			BlockIsDropping,
+			GameOver
 		}
 
 		GameState state = .NeedNewBlock;
@@ -98,6 +99,9 @@ namespace bh.game
 				return;
 			time = 0;
 
+			if (state == .GameOver)
+				return;
+
 			// drop the block
 			active_block.HandleInput(.Down);
 		}
@@ -139,6 +143,11 @@ namespace bh.game
 				Vector2 p = active_block.[Friend]blocks[i] + active_block.[Friend]position;
 				int x = int(p.x);
 				int y = int(p.y);
+				if (y >= 19)
+				{
+					state = .GameOver;
+					return;
+				}
 				data[x, y] = active_block.[Friend]sprites[i];
 				world.RemoveComponent(active_block, active_block.[Friend]sprites[i], false);
 				world.AddComponent(map_entity, data[x, y]);

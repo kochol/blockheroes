@@ -11,6 +11,7 @@ namespace bh.game
 		Entity map_entity;
 		Camera2D camera;
 		Block active_block = null;
+		WindowHandle window_handle;
 
 		Random rnd = new Random();
 
@@ -47,6 +48,8 @@ namespace bh.game
 
 		public void Init(World _world)
 		{
+			window_handle.Handle = 0;
+			window_handle.Index = 0;
 			for (int i = 0; i < 10; i++)
 			{
 				for (int j = 0; j < 20; j++)
@@ -80,6 +83,13 @@ namespace bh.game
 
 		public void Update(float _elasped_time)
 		{
+			// scale the camera
+			int w = 0; int h = 0;
+			Io.GetWindowSize(ref window_handle, ref w, ref h);
+			float sx = (float)w / 320.0f;
+			float sy = (float)h / 640.0f;
+			camera.Scale.Set(Math.Min(sx, sy));
+
 			if (state == .NeedNewBlock)
 			{
 				if (active_block != null)

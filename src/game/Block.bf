@@ -35,7 +35,7 @@ namespace bh.game
 		BlockType block_type;
 		Direction direction = .North;
 		ColorType	  color_type = .Blue;
-		Quat block_color;		
+		Color block_color;		
 		const float BlockSize = 32.0f;
 		const float BlockSizeHalf = BlockSize / 2.0f;
 
@@ -69,11 +69,11 @@ namespace bh.game
 			switch(color_type)
 			{
 			case .Red:
-				block_color = Quat(1, 0, 0, 1);
+				block_color = Color(1, 0, 0, 1);
 			case .Green:
-				block_color = Quat(0, 1, 0, 1);
+				block_color = Color(0, 1, 0, 1);
 			case .Blue:
-				block_color = Quat(0, 0, 1, 1);
+				block_color = Color(0, 0, 1, 1);
 			}
 		}
 

@@ -1,6 +1,8 @@
 using ari;
 using bh.game;
 using System;
+using System.Collections;
+using bh.net;
 
 namespace bh
 {
@@ -24,6 +26,7 @@ namespace bh
 #else
 		ClientSystem network = new ClientSystem();
 #endif
+		NetworkManager netManager;
 
 		// Game stuffs
 		Map map = new Map();
@@ -53,6 +56,7 @@ namespace bh
 #else
 			network.Connect("127.0.0.1", 55223);
 #endif
+			netManager = new NetworkManager(network);
 
 			Io.RegisterFileSystem("file", _fs);
 
@@ -136,6 +140,8 @@ namespace bh
 			delete _fs;
 
 			delete map;
+
+			delete netManager;
 
 			network.Stop();
 			delete network;

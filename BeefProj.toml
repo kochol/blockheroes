@@ -23,3 +23,18 @@ RelocType = "PIC"
 [Configs.Test.armv7-none-linux-android21]
 BuildKind = "StaticLib"
 RelocType = "PIC"
+
+[Configs.ServerDebug.Win32]
+BeefLibType = "Static"
+
+[Configs.ServerDebug.Win64]
+BeefLibType = "Static"
+PreprocessorMacros = ["DEBUG", "ARI_SERVER"]
+
+[Configs.ServerDebug.armv7-none-linux-android21]
+TargetName = "lib$(ProjectName)"
+BeefLibType = "Static"
+RelocType = "PIC"
+
+[Configs.ServerDebug.Linux64]
+BeefLibType = "Static"

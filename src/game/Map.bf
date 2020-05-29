@@ -88,7 +88,10 @@ namespace bh.game
 			Io.GetWindowSize(ref window_handle, ref w, ref h);
 			float sx = (float)w / 320.0f;
 			float sy = (float)h / 640.0f;
-			camera.Scale.Set(Math.Min(sx, sy));
+			sx = Math.Min(sx, sy);
+			camera.Scale.Set(sx);
+			camera.Position.x = -160 * sx;
+			camera.Position.y = -320 * sx;
 
 			if (state == .NeedNewBlock)
 			{

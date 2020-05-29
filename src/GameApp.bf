@@ -13,7 +13,17 @@ namespace bh
 		FileSystemLocal _fs = new FileSystemLocal();
 		float touch_x;
 		float touch_y;
+		float total_time = 0;
+		float touch_start_time;
 		bool MovedWithTouch;
+		bool MovedDownWithTouch;
+
+		// network
+#if ARI_SERVER
+		ServerSystem network = new ServerSystem();
+#else
+		ClientSystem network = new ClientSystem();
+#endif
 
 		// Game stuff
 		Map map = new Map();
@@ -30,8 +40,19 @@ namespace bh
 		public override void OnInit()
 		{
 			base.OnInit();
+
+			// Add systems
 			world.AddSystem(render_system);
 			world.AddSystem(scene_system);
+			world.AddSystem(network);
+
+			// Initialize network
+			Net.InitNetwork();
+#if ARI_SERVER
+			network.CreateServer("127.0.0.1", 55223);
+#else
+			network.Connect("127.0.0.1", 55223);
+#endif
 
 			Io.RegisterFileSystem("file", _fs);
 
@@ -41,6 +62,7 @@ namespace bh
 
 		public override void OnFrame(float _elapsedTime)
 		{
+			total_time += _elapsedTime;
 			base.OnFrame(_elapsedTime);
 			map.Update(_elapsedTime);
 			world.Update(_elapsedTime);
@@ -67,23 +89,29 @@ namespace bh
 				touch_x = _event.touches[0].pos_x;
 				touch_y = _event.touches[0].pos_y;
 				MovedWithTouch = false;
+				MovedDownWithTouch = false;
+				touch_start_time = total_time;
 			}
 			else if (_event.type == .ARI_EVENTTYPE_TOUCHES_MOVED)
 			{
 				float dx = touch_x - _event.touches[0].pos_x;
-				float dy = touch_y - _event.touches[0].pos_y;
-				int w = (_event.window_width - 640) / 10;
+				int w = _event.window_width / 15;
 				if (dx > w)
 				{
 					touch_x = _event.touches[0].pos_x;
 					map.HandleInput(.Left);
 					MovedWithTouch = true;
 				}
-				if (dx < -w)
+				else if (dx < -w)
 				{
 					touch_x = _event.touches[0].pos_x;
 					map.HandleInput(.Right);
 					MovedWithTouch = true;
+				}
+				else if (!MovedWithTouch && total_time - touch_start_time > 0.4f)
+				{
+					MovedDownWithTouch = true;
+					map.HandleInput(.Down);
 				}
 			}
 			else if (_event.type == .ARI_EVENTTYPE_TOUCHES_ENDED)
@@ -94,7 +122,7 @@ namespace bh
 				float dy = touch_y - _event.touches[0].pos_y;
 				if (dy < -200 && Math.Abs(dx) < 64)
 					map.HandleInput(.Drop);
-				else if (Math.Abs(dx) < 32)
+				else if (!MovedDownWithTouch && Math.Abs(dx) < 32)
 					map.HandleInput(.RotateCW);
 			}
 		}
@@ -108,6 +136,10 @@ namespace bh
 			delete _fs;
 
 			delete map;
+
+			network.Stop();
+			delete network;
+			Net.ShutdownNetwork();
 		}
 	}
 }

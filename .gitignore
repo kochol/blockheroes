@@ -5,3 +5,5 @@ build/
 BeefSpace_User.toml
 .fips-imports.cmake
 *.ktx
+libs/libblock-heroes.a
+libs/libcari.so

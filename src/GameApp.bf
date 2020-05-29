@@ -18,6 +18,13 @@ namespace bh
 		bool MovedWithTouch;
 		bool MovedDownWithTouch;
 
+		// network
+#if ARI_SERVER
+		ServerSystem network = new ServerSystem();
+#else
+		ClientSystem network = new ClientSystem();
+#endif
+
 		// Game stuffs
 		Map map = new Map();
 
@@ -33,8 +40,19 @@ namespace bh
 		public override void OnInit()
 		{
 			base.OnInit();
+
+			// Add systems
 			world.AddSystem(render_system);
 			world.AddSystem(scene_system);
+			world.AddSystem(network);
+
+			// Initialize network
+			Net.InitNetwork();
+#if ARI_SERVER
+			network.CreateServer("127.0.0.1", 55223);
+#else
+			network.Connect("127.0.0.1", 55223);
+#endif
 
 			Io.RegisterFileSystem("file", _fs);
 
@@ -118,6 +136,10 @@ namespace bh
 			delete _fs;
 
 			delete map;
+
+			network.Stop();
+			delete network;
+			Net.ShutdownNetwork();
 		}
 	}
 }

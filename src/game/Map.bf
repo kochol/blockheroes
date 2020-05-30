@@ -13,15 +13,6 @@ namespace bh.game
 		Block active_block = null;
 		WindowHandle window_handle;
 
-		Random rnd = new Random();
-
-		// time values
-		float time = 0;
-		float key_time = 0;
-		KeyType last_key = .Drop;
-		const float UpdateTime = 0.5f;
-		const float KeyUpdateDelay = 0.1f;
-
 		enum GameState
 		{
 			NeedNewBlock,
@@ -35,7 +26,6 @@ namespace bh.game
 		{
 			delete map_entity;
 			delete camera;
-			delete rnd;
 			delete active_block;
 			for (int i = 0; i < 10; i++)
 			{
@@ -98,38 +88,18 @@ namespace bh.game
 				if (active_block != null)
 					delete active_block;
 
-				BlockType bt = (BlockType)rnd.Next(7);
+				BlockType bt = .Box;
 				active_block = World.CreateEntity<Block>();
 				active_block.Init(world, bt, Vector2(5, 18), this);
 				state = .BlockIsDropping;
-				time = 0;
 				return;
 			}
-
-			time += _elasped_time;
-			key_time += _elasped_time;
-			if (time < UpdateTime)
-				return;
-			time = 0;
-
-			if (state == .GameOver)
-				return;
-
-			// drop the block
-			active_block.HandleInput(.Down);
 		}
 
 		public void HandleInput(KeyType _key)
 		{
 			if (state != .BlockIsDropping)
 				return;
-
-			if (key_time < KeyUpdateDelay && last_key == _key)
-				return;
-			key_time = 0;
-			if (_key == .Down)
-				time = 0;
-			last_key = _key;
 
 			active_block.HandleInput(_key);
 		}

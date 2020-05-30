@@ -29,7 +29,6 @@ namespace bh
 		NetworkManager netManager;
 
 		// Game stuffs
-		Map map = new Map();
 
 		public this()
 		{
@@ -56,19 +55,18 @@ namespace bh
 #else
 			network.Connect("127.0.0.1", 55223);
 #endif
-			netManager = new NetworkManager(network);
+			netManager = new NetworkManager(network, world);
 
 			Io.RegisterFileSystem("file", _fs);
 
-			// Game stuff
-			map.Init(world);
+			// Game stuffs
 		}
 
 		public override void OnFrame(float _elapsedTime)
 		{
 			total_time += _elapsedTime;
 			base.OnFrame(_elapsedTime);
-			map.Update(_elapsedTime);
+			netManager.Update(_elapsedTime);
 			world.Update(_elapsedTime);
 		}
 
@@ -78,15 +76,15 @@ namespace bh
 			if (_event.type == .ARI_EVENTTYPE_KEY_DOWN)
 			{
 				if (_event.key_code == .ARI_KEYCODE_UP)
-					map.HandleInput(.RotateCW);
+					netManager.HandleInput(.RotateCW);
 				if (_event.key_code == .ARI_KEYCODE_LEFT)
-					map.HandleInput(.Left);
+					netManager.HandleInput(.Left);
 				if (_event.key_code == .ARI_KEYCODE_RIGHT)
-					map.HandleInput(.Right);
+					netManager.HandleInput(.Right);
 				if (_event.key_code == .ARI_KEYCODE_DOWN)
-					map.HandleInput(.Down);
+					netManager.HandleInput(.Down);
 				if (_event.key_code == .ARI_KEYCODE_SPACE)
-					map.HandleInput(.Drop);
+					netManager.HandleInput(.Drop);
 			}
 			else if (_event.type == .ARI_EVENTTYPE_TOUCHES_BEGAN)
 			{
@@ -103,19 +101,19 @@ namespace bh
 				if (dx > w)
 				{
 					touch_x = _event.touches[0].pos_x;
-					map.HandleInput(.Left);
+					netManager.HandleInput(.Left);
 					MovedWithTouch = true;
 				}
 				else if (dx < -w)
 				{
 					touch_x = _event.touches[0].pos_x;
-					map.HandleInput(.Right);
+					netManager.HandleInput(.Right);
 					MovedWithTouch = true;
 				}
 				else if (!MovedWithTouch && total_time - touch_start_time > 0.4f)
 				{
 					MovedDownWithTouch = true;
-					map.HandleInput(.Down);
+					netManager.HandleInput(.Down);
 				}
 			}
 			else if (_event.type == .ARI_EVENTTYPE_TOUCHES_ENDED)
@@ -125,9 +123,9 @@ namespace bh
 				float dx = touch_x - _event.touches[0].pos_x;
 				float dy = touch_y - _event.touches[0].pos_y;
 				if (dy < -200 && Math.Abs(dx) < 64)
-					map.HandleInput(.Drop);
+					netManager.HandleInput(.Drop);
 				else if (!MovedDownWithTouch && Math.Abs(dx) < 32)
-					map.HandleInput(.RotateCW);
+					netManager.HandleInput(.RotateCW);
 			}
 		}
 
@@ -138,8 +136,6 @@ namespace bh
 			delete render_system;
 			delete scene_system;
 			delete _fs;
-
-			delete map;
 
 			delete netManager;
 

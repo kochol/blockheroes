@@ -1,6 +1,6 @@
 namespace bh.game
 {
-	public enum KeyType
+	public enum KeyType : int8
 	{
 		Left,
 		Right,

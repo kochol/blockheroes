@@ -132,7 +132,6 @@ namespace bh
 		public override void OnCleanup()
 		{
 			base.OnCleanup();
-			delete world;
 			delete render_system;
 			delete scene_system;
 			delete _fs;
@@ -142,6 +141,7 @@ namespace bh
 			network.Stop();
 			delete network;
 			Net.ShutdownNetwork();
+			delete world;
 		}
 	}
 }

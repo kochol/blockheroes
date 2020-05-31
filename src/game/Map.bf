@@ -53,6 +53,7 @@ namespace bh.game
 			camera.Position.y = -320;
 			map_entity = World.CreateEntity();
 			world.AddComponent(map_entity, camera);
+			world.AddEntity(map_entity);
 		}
 
 		public bool Collide(Vector2[] block_pos, Vector2 _pos)

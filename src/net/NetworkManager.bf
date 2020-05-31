@@ -37,8 +37,16 @@ namespace bh.net
 		const float UpdateTime = 0.5f;
 		const float KeyUpdateDelay = 0.1f;
 
+		// log file
+		System.IO.StreamWriter loger = new System.IO.StreamWriter() ~ delete _;
+		int32 counter = 0;
+
 		void OnConnect(int32 client_id)
 		{
+			var str = scope String();
+			client_id.ToString(str);
+			str.Append("log.txt");
+			loger.Create(str);
 			Console.WriteLine("Connected to server: {0}", client_id);
 			my_client_id = client_id;
 		}
@@ -92,6 +100,7 @@ namespace bh.net
 			network = _network;
 			world = _world;
 #if ARI_SERVER
+			loger.Create("log_server.txt");
 			network.OnClientConnected = new => this.OnClientConnected;
 			network.OnClientDisconnected = new => this.OnClientDisconnected;
 			for (int i = 0; i < 50; i++)
@@ -104,11 +113,12 @@ namespace bh.net
 			m_rpc_on_opponent_connect_client = Net.AddRPC<int32>("OnOpponentConnectClient", .Client, new => OnOpponentConnect, true);
 			m_rpc_start_game = Net.AddRPC("StartGame", .MultiCast, new => StartGame, true);
 			m_rpc_on_input_server = Net.AddRPC<KeyType>("HandleInputServer", .Server, new => HandleInputServer, true);
-			m_rpc_on_input = Net.AddRPC<int32, KeyType>("HandleInput", .MultiCast, new => HandleInput, true);
+			m_rpc_on_input = Net.AddRPC<int32, KeyType, int32>("HandleInput", .MultiCast, new => HandleInput, true);
 		}
 
-		void HandleInput(int32 client_id, KeyType _key)
+		void HandleInput(int32 client_id, KeyType _key, int32 c)
 		{
+			loger.WriteLine("HandleInput: {} {} {}", client_id, _key, c);
 			if (!game_started || client_id == my_client_id)
 				return;
 
@@ -118,10 +128,11 @@ namespace bh.net
 		// client send the input to server
 		public void HandleInputServer(KeyType _key)
 		{
+			//Console.WriteLine("HandleInputServer: {}", _key);
 			if (!game_started)
 				return;
 			var client_id = Net.GetLastRpcClientIndex();
-			network.CallRPC(m_rpc_on_input, client_id, _key);
+			network.CallRPC(m_rpc_on_input, client_id, _key, counter++);
 		}
 
 		public void HandleInput(KeyType _key)

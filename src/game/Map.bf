@@ -62,6 +62,7 @@ namespace bh.game
 			canvas.AddChild(camera);
 			map_entity = World.CreateEntity();
 			world.AddComponent(map_entity, canvas);
+			world.AddComponent(map_entity, camera);
 			world.AddEntity(map_entity);
 		}
 
@@ -138,6 +139,7 @@ namespace bh.game
 				data[x, y] = active_block.[Friend]sprites[i];
 				world.RemoveComponent(active_block, active_block.[Friend]sprites[i], false);
 				canvas.AddChild(data[x, y]);
+				world.AddComponent(map_entity, data[x, y]);
 				active_block.[Friend]sprites[i] = null;
 			}
 			canvas.RemoveChild(active_block);
@@ -155,7 +157,8 @@ namespace bh.game
 						// the line is full delete it
 						for (int di = 0; di < 10; di++)
 						{
-							canvas.RemoveChild(data[di, j]); // TODO: dispose the component
+							canvas.RemoveChild(data[di, j]);
+							world.RemoveComponent(map_entity, data[di, j], true);
 							data[di, j] = null;
 						}
 

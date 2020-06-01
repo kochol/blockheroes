@@ -33,7 +33,7 @@ namespace bh
 		public this()
 		{
 			setup = new GfxSetup();
-			setup.window.Width = 320;
+			setup.window.Width = 640;
 			setup.window.Height = 640;
 			setup.window.HighDpi = true;
 			// warning: Don't initialize anything here use OnInit function.

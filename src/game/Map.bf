@@ -9,6 +9,7 @@ namespace bh.game
 		Sprite2D[,] data = new Sprite2D[10,20] ~ delete _;
 		World world = null;
 		Entity map_entity;
+		Canvas canvas;
 		Camera2D camera;
 		Block active_block = null;
 		WindowHandle window_handle;
@@ -27,6 +28,7 @@ namespace bh.game
 			delete map_entity;
 			delete camera;
 			delete active_block;
+			delete canvas;
 			for (int i = 0; i < 10; i++)
 			{
 				for (int j = 0; j < 20; j++)
@@ -36,7 +38,7 @@ namespace bh.game
 			}
 		}
 
-		public void Init(World _world)
+		public void Init(World _world, bool _is_player)
 		{
 			window_handle.Handle = 0;
 			window_handle.Index = 0;
@@ -49,10 +51,17 @@ namespace bh.game
 			}
 			world = _world;
 			camera = World.CreateCamera2D();
-			camera.Position.x = -160;
-			camera.Position.y = -320;
+			canvas = World.CreateCanvas();
+			canvas.Rect.width = 320;
+			canvas.Rect.height = 640;
+			canvas.Rect.y = 0;
+			if (_is_player)
+				canvas.Rect.x = 0;
+			else
+				canvas.Rect.x = 320;
+			canvas.AddChild(camera);
 			map_entity = World.CreateEntity();
-			world.AddComponent(map_entity, camera);
+			world.AddComponent(map_entity, canvas);
 			world.AddEntity(map_entity);
 		}
 
@@ -74,16 +83,6 @@ namespace bh.game
 
 		public void Update(float _elasped_time)
 		{
-			// scale the camera
-			int w = 0; int h = 0;
-			Io.GetWindowSize(ref window_handle, ref w, ref h);
-			float sx = (float)w / 320.0f;
-			float sy = (float)h / 640.0f;
-			sx = Math.Min(sx, sy);
-			camera.Scale.Set(sx);
-			camera.Position.x = -160 * sx;
-			camera.Position.y = -320 * sx;
-
 			if (state == .NeedNewBlock)
 			{
 				if (active_block != null)
@@ -92,6 +91,7 @@ namespace bh.game
 				BlockType bt = .Box;
 				active_block = World.CreateEntity<Block>();
 				active_block.Init(world, bt, Vector2(5, 18), this);
+				canvas.AddChild(active_block);
 				state = .BlockIsDropping;
 				return;
 			}
@@ -137,9 +137,10 @@ namespace bh.game
 				}
 				data[x, y] = active_block.[Friend]sprites[i];
 				world.RemoveComponent(active_block, active_block.[Friend]sprites[i], false);
-				world.AddComponent(map_entity, data[x, y]);
+				canvas.AddChild(data[x, y]);
 				active_block.[Friend]sprites[i] = null;
 			}
+			canvas.RemoveChild(active_block);
 			state = .NeedNewBlock;
 
 			// check for line clean up
@@ -154,7 +155,7 @@ namespace bh.game
 						// the line is full delete it
 						for (int di = 0; di < 10; di++)
 						{
-							world.RemoveComponent(map_entity, data[di, j], true);
+							canvas.RemoveChild(data[di, j]); // TODO: dispose the component
 							data[di, j] = null;
 						}
 

@@ -54,7 +54,7 @@ namespace bh.net
 		void OnOpponentConnect(int32 client_id)
 		{
 			var map = new Map();
-			map.Init(world);
+			map.Init(world, my_client_id == client_id);
 			clients.Add(client_id, map);
 			if (my_client_id == client_id)
 				return;

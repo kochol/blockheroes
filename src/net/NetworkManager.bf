@@ -21,6 +21,7 @@ namespace bh.net
 		RPC m_rpc_start_game;
 		RPC m_rpc_on_input_server;
 		RPC m_rpc_on_input;
+		RPC m_rpc_on_add_block_type;
 		int32 my_client_id = -1;
 
 		int m_num_created_blocks = 0;
@@ -54,7 +55,7 @@ namespace bh.net
 		void OnOpponentConnect(int32 client_id)
 		{
 			var map = new Map();
-			map.Init(world, my_client_id == client_id);
+			map.Init(world, my_client_id == client_id, blocks);
 			clients.Add(client_id, map);
 			if (my_client_id == client_id)
 				return;
@@ -73,6 +74,10 @@ namespace bh.net
 		{
 			network.CallRPC(client_id, m_rpc_on_connect, client_id);
 			network.CallRPC(m_rpc_on_opponent_connect, client_id);
+			// send the blocks
+			for (int i = 0; i < 50; i++)
+				network.CallRPC(client_id, m_rpc_on_add_block_type, blocks[i]);
+
 			for (var i in clients)
 			{
 				if (i.key == client_id)
@@ -114,6 +119,7 @@ namespace bh.net
 			m_rpc_start_game = Net.AddRPC("StartGame", .MultiCast, new => StartGame, true);
 			m_rpc_on_input_server = Net.AddRPC<KeyType>("HandleInputServer", .Server, new => HandleInputServer, true);
 			m_rpc_on_input = Net.AddRPC<int32, KeyType, int32>("HandleInput", .MultiCast, new => HandleInput, true);
+			m_rpc_on_add_block_type = Net.AddRPC<BlockType>("AddBlockType", .Client, new => AddBlockType, true);
 		}
 
 		void HandleInput(int32 client_id, KeyType _key, int32 c)
@@ -151,6 +157,11 @@ namespace bh.net
 			clients[my_client_id].HandleInput(_key);
 		}
 
+		public void AddBlockType(BlockType _type)
+		{
+			blocks.Add(_type);
+		}
+
 		public void Update(float _elasped_time)
 		{
 			bool update_time = true;
@@ -173,6 +184,24 @@ namespace bh.net
 			if (time < UpdateTime)
 				return;
 			time = 0;
+
+#if ARI_SERVER
+			// check that we need to add new block
+			int blocks_used = 0;
+			for (var c in clients)
+			{
+				blocks_used = Math.Max(blocks_used, c.value.last_block);
+			}
+			if (blocks.Count - blocks_used < 10)
+			{
+				BlockType bt = (BlockType)rnd.Next(7);
+				blocks.Add(bt);
+				for (var c in clients)
+				{
+					network.CallRPC(c.key, m_rpc_on_add_block_type, bt);
+				}
+			}
+#endif
 
 			if (my_client_id > -1)
 			{

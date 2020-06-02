@@ -13,6 +13,8 @@ namespace bh.game
 		Camera2D camera;
 		Block active_block = null;
 		WindowHandle window_handle;
+		List<BlockType> blocks;
+		public int last_block = 0;
 
 		enum GameState
 		{
@@ -38,8 +40,9 @@ namespace bh.game
 			}
 		}
 
-		public void Init(World _world, bool _is_player)
+		public void Init(World _world, bool _is_player, List<BlockType> _blocks)
 		{
+			blocks = _blocks;
 			window_handle.Handle = 0;
 			window_handle.Index = 0;
 			for (int i = 0; i < 10; i++)
@@ -89,7 +92,11 @@ namespace bh.game
 				if (active_block != null)
 					delete active_block;
 
-				BlockType bt = .Box;
+				if (blocks.Count <= last_block)
+					return;
+
+				BlockType bt = blocks[last_block];
+				last_block++;
 				active_block = World.CreateEntity<Block>();
 				active_block.Init(world, bt, Vector2(5, 18), this);
 				canvas.AddChild(active_block);

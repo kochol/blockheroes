@@ -1,5 +1,5 @@
 using ari;
-using System;
+
 namespace bh.game
 {
 	public enum BlockType
@@ -21,21 +21,12 @@ namespace bh.game
 	    West
 	}
 
-	public enum ColorType
-	{
-		Red,
-		Blue,
-		Green
-		
-	}
-
 	public class Block : Entity
 	{
 		Vector2[] blocks = new Vector2[4];
 		BlockType block_type;
 		Direction direction = .North;
-		ColorType	  color_type = .Blue;
-		Color block_color;		
+
 		const float BlockSize = 32.0f;
 		const float BlockSizeHalf = BlockSize / 2.0f;
 
@@ -63,20 +54,6 @@ namespace bh.game
 					delete sprites[i];
 			delete sprites;
 		}
-
-		void UpdateBlockClr()
-		{
-			switch(color_type)
-			{
-			case .Red:
-				block_color = Color(1, 0, 0, 1);
-			case .Green:
-				block_color = Color(0, 1, 0, 1);
-			case .Blue:
-				block_color = Color(0, 0, 1, 1);
-			}
-		}
-
 
 		void UpdateBlockPos()
 		{
@@ -229,13 +206,24 @@ namespace bh.game
 		}
 
 		// Create components, Add them to world
-		public void Init(World _world, BlockType _block_type, ColorType _color_Type, Vector2 _pos, Map _map)
+		public void Init(World _world, BlockType _block_type, Vector2 _pos, Map _map)
 		{
 			block_type = _block_type;
 			position = _pos;
 			map = _map;
-			color_type = _color_Type;
-			UpdateBlockClr();
+
+			Color block_color;
+			switch(block_type)
+			{
+			case .Box: block_color = Color.YELLOW;
+			case .I: block_color = Color.SKYBLUE;
+			case .L: block_color = Color.PINK;
+			case .RL: block_color = Color.VIOLET;
+			case .RZ: block_color = Color.MAGENTA;
+			case .T: block_color = Color.PURPLE;
+			case .Z: block_color = Color.RED;
+			}
+
 			// Create components
 			for (int i = 0; i < 4; i++)
 			{
@@ -245,7 +233,7 @@ namespace bh.game
 				*sprites[i].Color = block_color;
 				_world.AddComponent(this, sprites[i]);
 			}
-			
+
 			UpdateBlockPos();
 
 			// Add entity to world

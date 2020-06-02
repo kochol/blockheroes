@@ -7,3 +7,6 @@ BeefSpace_User.toml
 *.ktx
 libs/libblock-heroes.a
 libs/libcari.so
+0log.txt
+log.txt
+log_server.txt

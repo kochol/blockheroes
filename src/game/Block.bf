@@ -23,12 +23,13 @@ namespace bh.game
 
 	public class Block : Entity
 	{
-		Vector2[] blocks = new Vector2[4];
+		Vector2[4] blocks;
 		BlockType block_type;
 		Direction direction = .North;
 
 		const float BlockSize = 32.0f;
 		const float BlockSizeHalf = BlockSize / 2.0f;
+		const float BlockOffsetx = 5;
 
 		Sprite2D[] sprites = new Sprite2D[4];
 		static TextureHandle block_texture = .();
@@ -40,6 +41,11 @@ namespace bh.game
 
 		this(EntityHandle _handle) : base(_handle)
 		{
+			LoadTexture();
+		}
+
+		public static void LoadTexture()
+		{
 			if (block_texture.Handle == uint32.MaxValue)
 			{
 				block_texture = Gfx.LoadTexture("res:block.png");
@@ -48,7 +54,6 @@ namespace bh.game
 
 		public ~this()
 		{
-			delete blocks;
 			for (int i = 0; i < 4; i++)
 				if (sprites[i] != null)
 					delete sprites[i];
@@ -202,7 +207,10 @@ namespace bh.game
 
 			// Set the sprite pos
 			for (int i = 0; i < 4; i++)
+			{
 				*sprites[i].Position = (blocks[i] + position) * BlockSize + BlockSizeHalf;
+				sprites[i].Position.x += BlockOffsetx;
+			}
 		}
 
 		// Create components, Add them to world

@@ -11,6 +11,8 @@ namespace bh.game
 		Entity map_entity;
 		Canvas canvas;
 		Camera2D camera;
+		Sprite2D left_wall;
+		Sprite2D right_wall;
 		Block active_block = null;
 		WindowHandle window_handle;
 		List<BlockType> blocks;
@@ -31,6 +33,8 @@ namespace bh.game
 			delete camera;
 			delete active_block;
 			delete canvas;
+			delete left_wall;
+			delete right_wall;
 			for (int i = 0; i < 10; i++)
 			{
 				for (int j = 0; j < 20; j++)
@@ -55,21 +59,41 @@ namespace bh.game
 			world = _world;
 			camera = World.CreateCamera2D();
 			canvas = World.CreateCanvas();
-			canvas.Rect.width = 320;
+			canvas.Rect.width = 330;
 			canvas.Rect.height = 640;
 			canvas.Rect.y = 0;
 			if (_is_player)
 				canvas.Rect.x = 0;
 			else
-				canvas.Rect.x = 320;
+				canvas.Rect.x = 330;
 			canvas.AddChild(camera);
+
+			// add walls
+			Block.LoadTexture();
+			left_wall = World.CreateSprite2D();
+			*left_wall.Texture = Block.[Friend]block_texture;
+			left_wall.Scale.x = 5;
+			left_wall.Scale.y = 640;
+			left_wall.Position.x = 2.5f;
+			left_wall.Position.y = 320;
+			right_wall = World.CreateSprite2D();
+			*right_wall.Texture = Block.[Friend]block_texture;
+			right_wall.Scale.x = 5;
+			right_wall.Scale.y = 640;
+			right_wall.Position.x = 327.5f;
+			right_wall.Position.y = 320;
+			canvas.AddChild(left_wall);
+			canvas.AddChild(right_wall);
+
 			map_entity = World.CreateEntity();
 			world.AddComponent(map_entity, canvas);
 			world.AddComponent(map_entity, camera);
+			world.AddComponent(map_entity, left_wall);
+			world.AddComponent(map_entity, right_wall);
 			world.AddEntity(map_entity);
 		}
 
-		public bool Collide(Vector2[] block_pos, Vector2 _pos)
+		public bool Collide(Vector2[4] block_pos, Vector2 _pos)
 		{
 			for (int i = 0; i < 4; i++)
 			{
@@ -138,7 +162,7 @@ namespace bh.game
 				Vector2 p = active_block.[Friend]blocks[i] + active_block.[Friend]position;
 				int x = int(p.x);
 				int y = int(p.y);
-				if (y >= 19)
+				if (y >= 19 || data[x, y] != null)
 				{
 					state = .GameOver;
 					return;

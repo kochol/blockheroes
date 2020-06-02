@@ -22,6 +22,9 @@ namespace bh.net
 		RPC m_rpc_on_input_server;
 		RPC m_rpc_on_input;
 		RPC m_rpc_on_add_block_type;
+		RPC m_rpc_on_punishment;
+		RPC m_rpc_on_apply_punishment;
+		RPC m_rpc_on_apply_punishment_server;
 		int32 my_client_id = -1;
 
 		int m_num_created_blocks = 0;
@@ -52,10 +55,50 @@ namespace bh.net
 			my_client_id = client_id;
 		}
 
+		void OnApplyPunishment(int32 _client_id)
+		{
+			if (my_client_id != _client_id)
+				clients[_client_id].ApplyPunishment();
+		}
+
+		void OnPunishment(int32 _client_id, int8 _block_hole)
+		{
+			clients[_client_id].AddPunishment(_block_hole);
+		}
+
+		// Client call the server that he applied the punishment
+		void OnApplyPunishmentServer()
+		{
+			var client_id = Net.GetLastRpcClientIndex();
+			network.CallRPC(m_rpc_on_apply_punishment, client_id);
+		}
+
+		// Client calls this event when they apply one punishment
+		void OnPunishmentApplied()
+		{
+			// send the event to server
+			network.CallRPC(m_rpc_on_apply_punishment_server);
+		}
+
+		// Server calls this event when they cleared multi lines and wants to punish others
+		void OnPunishmentFrom(int32 _client_id)
+		{
+			// Send the punishment to opponents
+			for (var c in clients)
+			{
+				if (c.key != _client_id)
+				{
+					network.CallRPC(m_rpc_on_punishment, c.key, int8(rnd.Next(10)));
+				}
+			}
+		}
+
 		void OnOpponentConnect(int32 client_id)
 		{
 			var map = new Map();
-			map.Init(world, my_client_id == client_id, blocks);
+			map.Init(world, client_id, my_client_id == client_id, blocks);
+			map.send_punishment_from = new => OnPunishmentFrom;
+			map.apply_punishment = new => OnPunishmentApplied;
 			clients.Add(client_id, map);
 			if (my_client_id == client_id)
 				return;
@@ -120,6 +163,9 @@ namespace bh.net
 			m_rpc_on_input_server = Net.AddRPC<KeyType>("HandleInputServer", .Server, new => HandleInputServer, true);
 			m_rpc_on_input = Net.AddRPC<int32, KeyType, int32>("HandleInput", .MultiCast, new => HandleInput, true);
 			m_rpc_on_add_block_type = Net.AddRPC<BlockType>("AddBlockType", .Client, new => AddBlockType, true);
+			m_rpc_on_punishment = Net.AddRPC<int32, int8>("OnPunishment", .MultiCast, new => OnPunishment, true);
+			m_rpc_on_apply_punishment = Net.AddRPC<int32>("OnApplyPunishment", .MultiCast, new => OnApplyPunishment, true);
+			m_rpc_on_apply_punishment_server = Net.AddRPC("OnApplyPunishmentServer", .Server, new => OnApplyPunishmentServer, true);
 		}
 
 		void HandleInput(int32 client_id, KeyType _key, int32 c)

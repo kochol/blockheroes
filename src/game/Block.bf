@@ -27,9 +27,9 @@ namespace bh.game
 		BlockType block_type;
 		Direction direction = .North;
 
-		const float BlockSize = 32.0f;
-		const float BlockSizeHalf = BlockSize / 2.0f;
-		const float BlockOffsetx = 5;
+		public const float BlockSize = 32.0f;
+		public const float BlockSizeHalf = BlockSize / 2.0f;
+		public const float BlockOffsetx = 5;
 
 		Sprite2D[] sprites = new Sprite2D[4];
 		static TextureHandle block_texture = .();
@@ -213,6 +213,14 @@ namespace bh.game
 			}
 		}
 
+		public static Sprite2D CreateBlockSprite()
+		{
+			var s = World.CreateSprite2D();
+			s.Scale.Set(BlockSize);
+			*s.Texture = block_texture;
+			return s;
+		}
+
 		// Create components, Add them to world
 		public void Init(World _world, BlockType _block_type, Vector2 _pos, Map _map)
 		{
@@ -235,9 +243,7 @@ namespace bh.game
 			// Create components
 			for (int i = 0; i < 4; i++)
 			{
-				sprites[i] = World.CreateSprite2D();
-				sprites[i].Scale.x = sprites[i].Scale.y = BlockSize;
-				*sprites[i].Texture = block_texture;
+				sprites[i] = CreateBlockSprite();
 				*sprites[i].Color = block_color;
 				_world.AddComponent(this, sprites[i]);
 			}

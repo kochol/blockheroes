@@ -17,6 +17,17 @@ namespace bh.game
 		WindowHandle window_handle;
 		List<BlockType> blocks;
 		public int last_block = 0;
+		public int last_block_cleared = 0;
+		public int cleard_block_combo = 0;
+		int32 client_id;
+		List<int8> punishments = new List<int8>() ~ delete _;
+		bool is_player = false;
+
+		// events
+		public delegate void SendPunishmentFrom(int32 _client_id);
+		public SendPunishmentFrom send_punishment_from = null ~ delete _;
+		public delegate void ApplyPunishmentDelegate();
+		public ApplyPunishmentDelegate apply_punishment = null ~ delete _;
 
 		enum GameState
 		{
@@ -44,9 +55,11 @@ namespace bh.game
 			}
 		}
 
-		public void Init(World _world, bool _is_player, List<BlockType> _blocks)
+		public void Init(World _world, int32 _client_id, bool _is_player, List<BlockType> _blocks)
 		{
+			client_id = _client_id;
 			blocks = _blocks;
+			is_player = _is_player;
 			window_handle.Handle = 0;
 			window_handle.Index = 0;
 			for (int i = 0; i < 10; i++)
@@ -155,8 +168,67 @@ namespace bh.game
 			}
 		}
 
+		public void AddPunishment(int8 _hole)
+		{
+			punishments.Add(_hole);
+		}
+
+		void ApplyPunishment(int8 _hole)
+		{
+			for (int y = 18; y >= 0; y--)
+			{
+				for (int x = 0; x < 10; x++)
+				{
+					if (data[x, y + 1] != null)
+					{
+						state = .GameOver;
+						return;
+					}
+					if (data[x, y] != null)
+						data[x, y].Position.y += Block.BlockSize;
+					data[x, y + 1] = data[x, y];
+					data[x, y] = null;
+				}
+			}
+			for (int i = 0; i < 10; i++)
+			{
+				if (i == _hole)
+					continue;
+
+				data[i, 0] = Block.CreateBlockSprite();
+				*data[i, 0].Color = Color.BROWN;
+				data[i, 0].Position.Set(i * Block.BlockSize + Block.BlockSizeHalf + Block.BlockOffsetx, Block.BlockSizeHalf);
+				canvas.AddChild(data[i, 0]);
+				world.AddComponent(map_entity, data[i, 0]);
+			}
+		}
+
+		public void ApplyPunishment()
+		{
+			if (is_player)
+			{
+				for (var h in punishments)
+				{
+					apply_punishment();
+					ApplyPunishment(h);
+				}
+				punishments.Clear();
+			}
+			else
+			{
+				var h = punishments[0];
+				punishments.RemoveAt(0);
+				ApplyPunishment(h);
+			}
+		}
+
 		public void BlockReachedToEnd()
 		{
+			if (last_block_cleared < last_block - 1)
+			{
+				cleard_block_combo = 0; // reset the combo
+			}
+
 			for (int i = 0; i < 4; i++)
 			{
 				Vector2 p = active_block.[Friend]blocks[i] + active_block.[Friend]position;
@@ -193,11 +265,26 @@ namespace bh.game
 							data[di, j] = null;
 						}
 
+						cleard_block_combo++;
+#if ARI_SERVER
+						// send the punishment to the opponent
+						if (cleard_block_combo > 1 && send_punishment_from != null)
+							send_punishment_from(client_id);
+#endif
+						last_block_cleared = last_block;
+
 						MoveBlocks(j + 1, true);
 						j--;
 					}
 				}
 			}
-		}
+
+			// Apply the punishments
+			if (is_player)
+			{
+				ApplyPunishment();
+			}
+
+		} // BlockReachedToEnd
 	}
 }

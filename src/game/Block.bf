@@ -212,12 +212,25 @@ namespace bh.game
 			position = _pos;
 			map = _map;
 
+			Color block_color;
+			switch(block_type)
+			{
+			case .Box: block_color = Color.YELLOW;
+			case .I: block_color = Color.SKYBLUE;
+			case .L: block_color = Color.PINK;
+			case .RL: block_color = Color.VIOLET;
+			case .RZ: block_color = Color.MAGENTA;
+			case .T: block_color = Color.PURPLE;
+			case .Z: block_color = Color.RED;
+			}
+
 			// Create components
 			for (int i = 0; i < 4; i++)
 			{
 				sprites[i] = World.CreateSprite2D();
 				sprites[i].Scale.x = sprites[i].Scale.y = BlockSize;
 				*sprites[i].Texture = block_texture;
+				*sprites[i].Color = block_color;
 				_world.AddComponent(this, sprites[i]);
 			}
 

@@ -37,4 +37,7 @@ BeefLibType = "Static"
 RelocType = "PIC"
 
 [Configs.ServerDebug.Linux64]
+OtherLinkFlags = "$(LinkFlags) /mnt/d/my/fips/Ariyana_beef/dist/linux64/ServerDebug/libcari.so"
 BeefLibType = "Static"
+LibPaths = ["$(ProjectDir)/dist/linux64/ServerDebug"]
+PreprocessorMacros = ["DEBUG", "ARI_SERVER"]

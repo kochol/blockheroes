@@ -217,7 +217,7 @@ namespace bh.game
 		{
 			var s = World.CreateSprite2D();
 			s.Scale.Set(BlockSize);
-			*s.Texture = block_texture;
+			//*s.Texture = block_texture;
 			return s;
 		}
 
@@ -244,7 +244,7 @@ namespace bh.game
 			for (int i = 0; i < 4; i++)
 			{
 				sprites[i] = CreateBlockSprite();
-				*sprites[i].Color = block_color;
+				//*sprites[i].Color = block_color;
 				_world.AddComponent(this, sprites[i]);
 			}
 

@@ -51,9 +51,9 @@ namespace bh
 			// Initialize network
 			Net.InitNetwork();
 #if ARI_SERVER
-			network.CreateServer("127.0.0.1", 55223);
+			network.CreateServer("116.202.133.112", 55223);
 #else
-			network.Connect("127.0.0.1", 55223);
+			network.Connect("116.202.133.112", 55223);
 #endif
 			netManager = new NetworkManager(network, world);
 

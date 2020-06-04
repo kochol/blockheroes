@@ -42,7 +42,9 @@ namespace bh.net
 		const float KeyUpdateDelay = 0.1f;
 
 		// log file
+#if !BF_PLATFORM_ANDROID
 		System.IO.StreamWriter loger = new System.IO.StreamWriter() ~ delete _;
+#endif
 		int32 counter = 0;
 
 		void OnConnect(int32 client_id)
@@ -50,7 +52,9 @@ namespace bh.net
 			var str = scope String();
 			client_id.ToString(str);
 			str.Append("log.txt");
+#if !BF_PLATFORM_ANDROID
 			loger.Create(str);
+#endif			
 			Console.WriteLine("Connected to server: {0}", client_id);
 			my_client_id = client_id;
 		}
@@ -170,7 +174,9 @@ namespace bh.net
 
 		void HandleInput(int32 client_id, KeyType _key, int32 c)
 		{
+#if !BF_PLATFORM_ANDROID
 			loger.WriteLine("HandleInput: {} {} {}", client_id, _key, c);
+#endif
 			if (!game_started || client_id == my_client_id)
 				return;
 

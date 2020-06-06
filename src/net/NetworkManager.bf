@@ -61,12 +61,18 @@ namespace bh.net
 
 		void OnApplyPunishment(int32 _client_id)
 		{
+#if !BF_PLATFORM_ANDROID
+			loger.WriteLine("OnApplyPunishment {}", _client_id);
+#endif
 			if (my_client_id != _client_id)
 				clients[_client_id].ApplyPunishment();
 		}
 
 		void OnPunishment(int32 _client_id, int8 _block_hole)
 		{
+#if !BF_PLATFORM_ANDROID
+			loger.WriteLine("OnPunishment {} {}", _client_id, _block_hole);
+#endif
 			clients[_client_id].AddPunishment(_block_hole);
 		}
 
@@ -140,6 +146,14 @@ namespace bh.net
 		{
 			delete clients[client_id];
 			clients.Remove(client_id);
+
+			if (clients.Count == 0)
+			{
+				// Create new blocks for the next game
+				blocks.Clear();
+				for (int i = 0; i < 50; i++)
+					blocks.Add((BlockType)rnd.Next(7));
+			}
 		}
 
 		public this(ServerSystem _network, World _world)
@@ -172,6 +186,7 @@ namespace bh.net
 			m_rpc_on_apply_punishment_server = Net.AddRPC("OnApplyPunishmentServer", .Server, new => OnApplyPunishmentServer, true);
 		}
 
+		// Server calls this to update the inputs
 		void HandleInput(int32 client_id, KeyType _key, int32 c)
 		{
 #if !BF_PLATFORM_ANDROID
@@ -183,16 +198,16 @@ namespace bh.net
 			clients[client_id].HandleInput(_key);
 		}
 
-		// client send the input to server
+		// client send the input to server and server multi cast it to every one
 		public void HandleInputServer(KeyType _key)
 		{
-			//Console.WriteLine("HandleInputServer: {}", _key);
 			if (!game_started)
 				return;
 			var client_id = Net.GetLastRpcClientIndex();
 			network.CallRPC(m_rpc_on_input, client_id, _key, counter++);
 		}
 
+		// Handle input on client
 		public void HandleInput(KeyType _key)
 		{
 			if (!game_started)

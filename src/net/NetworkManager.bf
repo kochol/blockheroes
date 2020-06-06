@@ -44,16 +44,21 @@ namespace bh.net
 		// log file
 #if !BF_PLATFORM_ANDROID
 		System.IO.StreamWriter loger = new System.IO.StreamWriter() ~ delete _;
+		System.IO.StreamWriter logerInput = new System.IO.StreamWriter() ~ delete _;
 #endif
 		int32 counter = 0;
 
 		void OnConnect(int32 client_id)
 		{
+#if !BF_PLATFORM_ANDROID
 			var str = scope String();
 			client_id.ToString(str);
 			str.Append("log.txt");
-#if !BF_PLATFORM_ANDROID
 			loger.Create(str);
+			str.Clear();
+			client_id.ToString(str);
+			str.Append("log_input.txt");
+			logerInput.Create(str);
 #endif			
 			Console.WriteLine("Connected to server: {0}", client_id);
 			my_client_id = client_id;
@@ -128,7 +133,7 @@ namespace bh.net
 			network.CallRPC(client_id, m_rpc_on_connect, client_id);
 			network.CallRPC(m_rpc_on_opponent_connect, client_id);
 			// send the blocks
-			for (int i = 0; i < 50; i++)
+			for (int i = 0; i < blocks.Count; i++)
 				network.CallRPC(client_id, m_rpc_on_add_block_type, blocks[i]);
 
 			for (var i in clients)
@@ -153,6 +158,7 @@ namespace bh.net
 				blocks.Clear();
 				for (int i = 0; i < 50; i++)
 					blocks.Add((BlockType)rnd.Next(7));
+				game_started = false;
 			}
 		}
 
@@ -167,6 +173,7 @@ namespace bh.net
 			world = _world;
 #if ARI_SERVER
 			loger.Create("log_server.txt");
+			logerInput.Create("log_input_server.txt");
 			network.OnClientConnected = new => this.OnClientConnected;
 			network.OnClientDisconnected = new => this.OnClientDisconnected;
 			for (int i = 0; i < 50; i++)
@@ -205,6 +212,10 @@ namespace bh.net
 				return;
 			var client_id = Net.GetLastRpcClientIndex();
 			network.CallRPC(m_rpc_on_input, client_id, _key, counter++);
+
+#if !BF_PLATFORM_ANDROID
+			logerInput.WriteLine("{} {}", client_id, _key);
+#endif
 		}
 
 		// Handle input on client
@@ -222,6 +233,11 @@ namespace bh.net
 
 			network.CallRPC(m_rpc_on_input_server, _key);
 			clients[my_client_id].HandleInput(_key);
+
+#if !BF_PLATFORM_ANDROID
+			logerInput.WriteLine("{} {}", my_client_id, _key);
+#endif
+
 		}
 
 		public void AddBlockType(BlockType _type)
@@ -274,6 +290,9 @@ namespace bh.net
 			{
 				network.CallRPC<KeyType>(m_rpc_on_input_server, .Down);
 				clients[my_client_id].HandleInput(.Down);
+#if !BF_PLATFORM_ANDROID
+			logerInput.WriteLine("{} {}", my_client_id, KeyType.Down);
+#endif
 			}
 		}
 	}

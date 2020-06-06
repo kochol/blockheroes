@@ -11,3 +11,4 @@ libs/libcari.so
 log.txt
 log_server.txt
 1log.txt
+*.txt

@@ -25,6 +25,8 @@ namespace bh.net
 		RPC m_rpc_on_punishment;
 		RPC m_rpc_on_apply_punishment;
 		RPC m_rpc_on_apply_punishment_server;
+		RPC m_rpc_on_apply_new_line_server;
+		RPC m_rpc_on_apply_new_line_multicast;
 		int32 my_client_id = -1;
 
 		int m_num_created_blocks = 0;
@@ -108,12 +110,34 @@ namespace bh.net
 			}
 		}
 
+		void OnApplyNewLineMultiCast(int32 _client_id)
+		{
+			if (_client_id == my_client_id)
+				return;
+
+			clients[_client_id].ApplyNewLine();
+		}
+
+		// Client calls this to tell the server he applied new block
+		void OnApplyNewLineServer()
+		{
+			var client_id = Net.GetLastRpcClientIndex();
+			network.CallRPC(m_rpc_on_apply_new_line_multicast, client_id);
+		}
+
+		// Client calls this event when they make a new line.
+		void OnApplyNewLine()
+		{
+			network.CallRPC(m_rpc_on_apply_new_line_server);
+		}
+
 		void OnOpponentConnect(int32 client_id)
 		{
 			var map = new Map();
 			map.Init(world, client_id, my_client_id == client_id, blocks);
 			map.send_punishment_from = new => OnPunishmentFrom;
 			map.apply_punishment = new => OnPunishmentApplied;
+			map.apply_new_line = new => OnApplyNewLine;
 			clients.Add(client_id, map);
 			if (my_client_id == client_id)
 				return;
@@ -191,6 +215,8 @@ namespace bh.net
 			m_rpc_on_punishment = Net.AddRPC<int32, int8>("OnPunishment", .MultiCast, new => OnPunishment, true);
 			m_rpc_on_apply_punishment = Net.AddRPC<int32>("OnApplyPunishment", .MultiCast, new => OnApplyPunishment, true);
 			m_rpc_on_apply_punishment_server = Net.AddRPC("OnApplyPunishmentServer", .Server, new => OnApplyPunishmentServer, true);
+			m_rpc_on_apply_new_line_server = Net.AddRPC("OnApplyNewLineServer", .Server, new => OnApplyNewLineServer, true);
+			m_rpc_on_apply_new_line_multicast = Net.AddRPC<int32>("OnApplyNewLineMultiCast", .MultiCast, new => OnApplyNewLineMultiCast, true);
 		}
 
 		// Server calls this to update the inputs
@@ -247,6 +273,9 @@ namespace bh.net
 
 		public void Update(float _elasped_time)
 		{
+			if (!game_started)
+				return;
+
 			bool update_time = true;
 			for (var c in clients)
 			{

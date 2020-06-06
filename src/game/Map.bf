@@ -22,12 +22,21 @@ namespace bh.game
 		int32 client_id;
 		List<int8> punishments = new List<int8>() ~ delete _;
 		bool is_player = false;
+		bool CanApplyNewLine = false;
+
+		public void ApplyNewLine()
+		{
+			Runtime.Assert(!CanApplyNewLine && state == .NeedNewBlock);
+			CanApplyNewLine = true;
+			Update(0);
+		}
 
 		// events
 		public delegate void SendPunishmentFrom(int32 _client_id);
 		public SendPunishmentFrom send_punishment_from = null ~ delete _;
 		public delegate void ApplyPunishmentDelegate();
 		public ApplyPunishmentDelegate apply_punishment = null ~ delete _;
+		public ApplyPunishmentDelegate apply_new_line = null ~ delete _;
 
 		enum GameState
 		{
@@ -124,13 +133,21 @@ namespace bh.game
 
 		public void Update(float _elasped_time)
 		{
-			if (state == .NeedNewBlock)
+			if ((is_player || CanApplyNewLine) && state == .NeedNewBlock)
 			{
 				if (active_block != null)
+				{
 					delete active_block;
+					active_block = null;
+				}
 
 				if (blocks.Count <= last_block)
 					return;
+
+				CanApplyNewLine = false;
+
+				if (is_player && apply_new_line != null)
+					apply_new_line();
 
 				BlockType bt = blocks[last_block];
 				last_block++;

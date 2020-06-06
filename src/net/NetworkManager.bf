@@ -140,6 +140,14 @@ namespace bh.net
 		{
 			delete clients[client_id];
 			clients.Remove(client_id);
+
+			if (clients.Count == 0)
+			{
+				// Create new blocks for the next game
+				blocks.Clear();
+				for (int i = 0; i < 50; i++)
+					blocks.Add((BlockType)rnd.Next(7));
+			}
 		}
 
 		public this(ServerSystem _network, World _world)

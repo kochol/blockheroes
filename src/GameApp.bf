@@ -36,6 +36,7 @@ namespace bh
 			setup.window.Width = 660;
 			setup.window.Height = 640;
 			setup.window.HighDpi = true;
+			setup.swap_interval = 1;
 			// warning: Don't initialize anything here use OnInit function.
 		}
 

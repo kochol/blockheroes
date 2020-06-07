@@ -3,6 +3,7 @@ using bh.game;
 using System;
 using System.Collections;
 using bh.net;
+using bh.gui;
 
 namespace bh
 {
@@ -28,7 +29,8 @@ namespace bh
 #endif
 		NetworkManager netManager;
 
-		// Game stuffs
+		// Game stuff
+		MainMenu main_menu;
 
 		public this()
 		{
@@ -59,7 +61,9 @@ namespace bh
 
 			Io.RegisterFileSystem("file", _fs);
 
-			// Game stuffs
+			// Game stuff
+			main_menu = World.CreateEntity<MainMenu>();
+			main_menu.Init(world);
 		}
 
 		public override void OnFrame(float _elapsedTime)
@@ -135,6 +139,8 @@ namespace bh
 			delete render_system;
 			delete scene_system;
 			delete _fs;
+
+			delete main_menu;
 
 			delete netManager;
 

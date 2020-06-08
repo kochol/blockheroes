@@ -45,6 +45,10 @@ namespace bh
 		{
 			base.OnInit();
 
+			// Set clear color
+			Color clear_color = .(72, 78, 112, 255);
+			Gfx.SetClearColor(ref clear_color);
+
 			// Add systems
 			world.AddSystem(render_system);
 			world.AddSystem(scene_system);

@@ -153,7 +153,9 @@ namespace bh
 
 		void OnMultiPlayerClicked()
 		{
+#if !ARI_SERVER
 			network.Connect(IP, Port);
+#endif
 			delete main_menu;
 			main_menu = null;
 		}

@@ -10,6 +10,10 @@ namespace bh.gui
 		Sprite2D sp_multi_player = null ~ delete _;
 		Camera2D camera = null ~ delete _;
 
+		public delegate void OnButtonClickDelegate();
+		public OnButtonClickDelegate OnSinglePlayerClick = null ~ delete _;
+		public OnButtonClickDelegate OnMultiPlayerClick = null ~ delete _;
+
 		protected this(EntityHandle _handle): base(_handle)
 		{
 			if (tex_Buttons.Handle == uint32.MaxValue)
@@ -79,9 +83,9 @@ namespace bh.gui
 				return;
 
 			if (ButtonClicked(_event, sp_single_player))
-				Console.WriteLine("Single player button clicked");
+				OnSinglePlayerClick();
 			else if (ButtonClicked(_event, sp_multi_player))
-				Console.WriteLine("Multi player button clicked");
+				OnMultiPlayerClick();
 		}
 	}
 }

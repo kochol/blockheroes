@@ -28,6 +28,8 @@ namespace bh
 		ClientSystem network = new ClientSystem();
 #endif
 		NetworkManager netManager;
+		String IP = "104.244.75.183";
+		int32 Port = 55223;
 
 		// Game stuff
 		MainMenu main_menu;
@@ -57,10 +59,9 @@ namespace bh
 			// Initialize network
 			Net.InitNetwork();
 #if ARI_SERVER
-			network.CreateServer("127.0.0.1", 55223);
-#else
-			network.Connect("127.0.0.1", 55223);
+			network.CreateServer(IP, Port);
 #endif
+
 			netManager = new NetworkManager(network, world);
 
 			Io.RegisterFileSystem("file", _fs);
@@ -68,6 +69,8 @@ namespace bh
 			// Game stuff
 			main_menu = World.CreateEntity<MainMenu>();
 			main_menu.Init(world);
+			main_menu.OnSinglePlayerClick = new => OnSinglePlayerClicked;
+			main_menu.OnMultiPlayerClick = new => OnMultiPlayerClicked;
 		}
 
 		public override void OnFrame(float _elapsedTime)
@@ -138,6 +141,20 @@ namespace bh
 				else if (!MovedDownWithTouch && Math.Abs(dx) < 32)
 					netManager.HandleInput(.RotateCW);
 			}
+		}
+
+		void OnSinglePlayerClicked()
+		{
+			netManager.StartSinglePlayer();
+			delete main_menu;
+			main_menu = null;
+		}
+
+		void OnMultiPlayerClicked()
+		{
+			network.Connect(IP, Port);
+			delete main_menu;
+			main_menu = null;
 		}
 
 		public override void OnCleanup()

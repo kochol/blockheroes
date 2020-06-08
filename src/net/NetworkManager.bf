@@ -34,6 +34,7 @@ namespace bh.net
 		Random rnd = new Random() ~ delete _;
 
 		bool game_started = false;
+		bool single_player = false;
 		World world;
 
 		// time values
@@ -315,6 +316,9 @@ namespace bh.net
 			}
 #endif
 
+			if (single_player && blocks.Count - clients[0].last_block < 10)
+				blocks.Add((BlockType)rnd.Next(7));
+
 			if (my_client_id > -1)
 			{
 				network.CallRPC<KeyType>(m_rpc_on_input_server, .Down);
@@ -323,6 +327,17 @@ namespace bh.net
 			logerInput.WriteLine("{} {}", my_client_id, KeyType.Down);
 #endif
 			}
+		} // Update
+
+		public void StartSinglePlayer()
+		{
+			OnConnect(0);
+			OnOpponentConnect(0);
+			StartGame();
+			blocks.Clear();
+			for (int i = 0; i < 50; i++)
+				blocks.Add((BlockType)rnd.Next(7));
+			single_player = true;
 		}
 	}
 }

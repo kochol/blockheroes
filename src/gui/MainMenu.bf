@@ -1,4 +1,5 @@
 using ari;
+using System;
 
 namespace bh.gui
 {
@@ -41,6 +42,46 @@ namespace bh.gui
 
 			// Add entity
 			world.AddEntity(this);
+		}
+
+		bool ButtonClicked(ari_event* _event, Sprite2D _btn)
+		{
+			// Check for click
+			int32 sx = _event.window_width / 2 - (int32)_btn.Scale.x / 2 - (int32)_btn.Position.x;
+			int32 sy = _event.window_height / 2 - (int32)_btn.Scale.y / 2 - (int32)_btn.Position.y;
+			int32 ex = sx + (int32)_btn.Scale.x;
+			int32 ey = sy + (int32)_btn.Scale.y;
+
+			if (_event.type == .ARI_EVENTTYPE_MOUSE_UP)
+			{
+				if (_event.mouse_x < ex && _event.mouse_x > sx &&
+					_event.mouse_y < ey && _event.mouse_y > sy)
+				{
+					return true;
+				}
+			}
+			else
+			{
+				
+				if (_event.touches[0].pos_x < ex && _event.touches[0].pos_x > sx &&
+					_event.touches[0].pos_y < ey && _event.touches[0].pos_y > sy)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		public void OnEvent(ari_event* _event)
+		{
+			if (_event.type != .ARI_EVENTTYPE_MOUSE_UP && _event.type != .ARI_EVENTTYPE_TOUCHES_ENDED)
+				return;
+
+			if (ButtonClicked(_event, sp_single_player))
+				Console.WriteLine("Single player button clicked");
+			else if (ButtonClicked(_event, sp_multi_player))
+				Console.WriteLine("Multi player button clicked");
 		}
 	}
 }

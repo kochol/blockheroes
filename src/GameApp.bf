@@ -77,6 +77,9 @@ namespace bh
 		public override void OnEvent(ari_event* _event, ref WindowHandle _handle)
 		{
 			base.OnEvent(_event, ref _handle);
+			if (main_menu != null)
+				main_menu.OnEvent(_event);
+
 			if (_event.type == .ARI_EVENTTYPE_KEY_DOWN)
 			{
 				if (_event.key_code == .ARI_KEYCODE_UP)

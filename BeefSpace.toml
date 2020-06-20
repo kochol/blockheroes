@@ -1,5 +1,5 @@
 FileVersion = 1
-Projects = {block-heroes = {Path = "."}, Ariyana_beef = {Path = "../ariyana/Beef"}}
+Projects = {block-heroes = {Path = "."}, Ariyana_beef = {Path = "../ariyana/Beef"}, CurlBeef = {Path = "../ariyana/Beef/deps/CurlBeef"}}
 ExtraPlatforms = ["Linux64", "armv7-none-linux-android21"]
 
 [Workspace]

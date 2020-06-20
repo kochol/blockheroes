@@ -1,4 +1,5 @@
 using ari;
+using ari.user;
 using bh.game;
 using System;
 using System.Collections;
@@ -28,8 +29,11 @@ namespace bh
 		ClientSystem network = new ClientSystem();
 #endif
 		NetworkManager netManager;
-		String IP = "104.244.75.183";
+		String IP = "127.0.0.1";//"104.244.75.183";
 		int32 Port = 55223;
+
+		// Profile server
+		ProfileServer profile_server = null ~ delete _;
 
 		// Game stuff
 		MainMenu main_menu;
@@ -66,6 +70,9 @@ namespace bh
 			netManager = new NetworkManager(network, world);
 
 			Io.RegisterFileSystem("file", _fs);
+
+			// Profile server
+			profile_server = new ProfileServer("https://localhost:44327/api/")
 
 			// Game stuff
 			main_menu = World.CreateEntity<MainMenu>();

@@ -1,5 +1,6 @@
 using ari;
 using ari.user;
+using ari.net;
 using bh.game;
 using System;
 using System.Collections;
@@ -32,8 +33,8 @@ namespace bh
 		String IP = "127.0.0.1";//"104.244.75.183";
 		int32 Port = 55223;
 
-		// Profile server
-		ProfileServer profile_server = null ~ delete _;
+		// Profile server: The world will delete this on exit
+		ProfileSystem profile_system = null;
 
 		// Game stuff
 		MainMenu main_menu;
@@ -72,7 +73,11 @@ namespace bh
 			Io.RegisterFileSystem("file", _fs);
 
 			// Profile server
-			profile_server = new ProfileServer("https://localhost:44327/api/")
+			HttpClientService http = new HttpClientService();
+			world.AddSystem(http);
+
+			profile_system = new ProfileSystem("https://localhost:44327/api/", http);
+			profile_system.Login();
 
 			// Game stuff
 			main_menu = World.CreateEntity<MainMenu>();
@@ -177,6 +182,8 @@ namespace bh
 			delete main_menu;
 
 			delete netManager;
+
+			delete profile_system;
 
 			network.Stop();
 			delete network;

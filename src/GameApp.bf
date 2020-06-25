@@ -30,7 +30,7 @@ namespace bh
 		ClientSystem network = new ClientSystem();
 #endif
 		NetworkManager netManager;
-		String IP = "127.0.0.1";//"104.244.75.183";
+		String IP = "104.244.75.183";//"127.0.0.1";//
 		int32 Port = 55223;
 
 		// Profile server: The world will delete this on exit
@@ -77,6 +77,8 @@ namespace bh
 			world.AddSystem(http);
 
 			profile_system = new ProfileSystem("https://localhost:44327/api/", http);
+			profile_system.OnLoggedIn = new => OnLoggedIn;
+			profile_system.OnPlayerData = new => OnPlayerData;
 			profile_system.Login();
 
 			// Game stuff
@@ -170,6 +172,17 @@ namespace bh
 #endif
 			delete main_menu;
 			main_menu = null;
+		}
+
+		void OnLoggedIn()
+		{
+			profile_system.GetPlayerData();
+		}
+
+		void OnPlayerData(Player player)
+		{
+			Console.WriteLine("Welcome {}", player.userName);
+			delete player;
 		}
 
 		public override void OnCleanup()

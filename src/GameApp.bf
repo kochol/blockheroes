@@ -30,8 +30,8 @@ namespace bh
 		ClientSystem network = new ClientSystem();
 #endif
 		NetworkManager netManager;
-		String IP = "104.244.75.183";//"127.0.0.1";//
-		int32 Port = 55223;
+		public static String IP = "104.244.75.183";//"127.0.0.1";//
+		public static int32 Port = 55223;
 
 		// Profile server: The world will delete this on exit
 		ProfileSystem profile_system = null;
@@ -167,6 +167,8 @@ namespace bh
 
 		void OnMultiPlayerClicked()
 		{
+			profile_system.AutoJoinToLobby();
+			return;
 #if !ARI_SERVER
 			network.Connect(IP, Port);
 #endif

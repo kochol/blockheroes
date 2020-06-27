@@ -79,7 +79,9 @@ namespace bh
 			profile_system = new ProfileSystem("https://localhost:44327/api/", http);
 			profile_system.OnLoggedIn = new => OnLoggedIn;
 			profile_system.OnPlayerData = new => OnPlayerData;
+			profile_system.OnJoinedLobby = new => OnJoinedLobby;
 			profile_system.Login();
+			world.AddSystem(profile_system);
 
 			// Game stuff
 			main_menu = World.CreateEntity<MainMenu>();
@@ -96,6 +98,7 @@ namespace bh
 			world.Update(_elapsedTime);
 		}
 
+		// handle keyboard and touch events
 		public override void OnEvent(ari_event* _event, ref WindowHandle _handle)
 		{
 			base.OnEvent(_event, ref _handle);
@@ -165,15 +168,19 @@ namespace bh
 			main_menu = null;
 		}
 
+		void OnJoinedLobby(Lobby lobby)
+		{
+#if !ARI_SERVER
+			network.Connect(lobby.serverIp, lobby.serverPort);
+#endif
+			delete main_menu;
+			main_menu = null;
+		}
+
 		void OnMultiPlayerClicked()
 		{
 			profile_system.AutoJoinToLobby();
 			return;
-#if !ARI_SERVER
-			network.Connect(IP, Port);
-#endif
-			delete main_menu;
-			main_menu = null;
 		}
 
 		void OnLoggedIn()
@@ -197,8 +204,6 @@ namespace bh
 			delete main_menu;
 
 			delete netManager;
-
-			delete profile_system;
 
 			network.Stop();
 			delete network;

@@ -1,5 +1,5 @@
 FileVersion = 1
-Dependencies = {corlib = "*", Ariyana_beef = "*"}
+Dependencies = {corlib = "*", Ariyana_beef = "*", imgui-beef = "*"}
 
 [Project]
 Name = "block-heroes"
@@ -10,6 +10,9 @@ DefaultNamespace = "bh"
 BuildKind = "StaticLib"
 TargetName = "lib$(ProjectName)"
 RelocType = "PIC"
+
+[Configs.Debug.Win64]
+DebugCommandArguments = "-p 2323"
 
 [Configs.Release.armv7-none-linux-android21]
 BuildKind = "StaticLib"

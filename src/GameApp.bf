@@ -1,4 +1,5 @@
 using ari;
+using ari.gui;
 using ari.user;
 using ari.net;
 using bh.game;
@@ -13,8 +14,10 @@ namespace bh
 	{
 		// Engine stuffs
 		World world = new World();
+		public Entity GameEntity;
 		RenderSystem2D render_system = new RenderSystem2D();
 		SceneSystem2D scene_system = new SceneSystem2D();
+		GuiSystem gui_system = new GuiSystem();
 		FileSystemLocal _fs = new FileSystemLocal();
 		float touch_x;
 		float touch_y;
@@ -61,6 +64,7 @@ namespace bh
 			world.AddSystem(render_system);
 			world.AddSystem(scene_system);
 			world.AddSystem(network);
+			render_system.AddChild(world, gui_system);
 
 			// Initialize network
 			Net.InitNetwork();
@@ -84,10 +88,14 @@ namespace bh
 			world.AddSystem(profile_system);
 
 			// Game stuff
-			main_menu = World.CreateEntity<MainMenu>();
-			main_menu.Init(world);
+			GameEntity = World.CreateEntity();
+
+			main_menu = new MainMenu();
 			main_menu.OnSinglePlayerClick = new => OnSinglePlayerClicked;
 			main_menu.OnMultiPlayerClick = new => OnMultiPlayerClicked;
+
+			world.AddComponent(GameEntity, main_menu);
+			world.AddEntity(GameEntity);
 		}
 
 		public override void OnFrame(float _elapsedTime)
@@ -102,8 +110,9 @@ namespace bh
 		public override void OnEvent(ari_event* _event, ref WindowHandle _handle)
 		{
 			base.OnEvent(_event, ref _handle);
-			if (main_menu != null)
-				main_menu.OnEvent(_event);
+			world.Emit(_event, ref _handle);
+
+			//bool isguiactive = imgui_beef.ImGui.IsAnyItemActive();
 
 			if (_event.type == .ARI_EVENTTYPE_KEY_DOWN)
 			{
@@ -164,7 +173,7 @@ namespace bh
 		void OnSinglePlayerClicked()
 		{
 			netManager.StartSinglePlayer();
-			delete main_menu;
+			world.RemoveComponent(GameEntity, main_menu, true);
 			main_menu = null;
 		}
 
@@ -173,7 +182,7 @@ namespace bh
 #if !ARI_SERVER
 			network.Connect(lobby.serverIp, lobby.serverPort);
 #endif
-			delete main_menu;
+			world.RemoveComponent(GameEntity, main_menu, true);
 			main_menu = null;
 		}
 
@@ -199,9 +208,15 @@ namespace bh
 			base.OnCleanup();
 			delete render_system;
 			delete scene_system;
+			delete gui_system;
 			delete _fs;
 
-			delete main_menu;
+			if (main_menu != null)
+			{
+				world.RemoveComponent(GameEntity, main_menu, true);
+				main_menu = null;
+			}
+			delete GameEntity;
 
 			delete netManager;
 

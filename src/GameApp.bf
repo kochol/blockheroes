@@ -37,10 +37,12 @@ namespace bh
 		public static int32 Port = 55223;
 
 		// Profile server: The world will delete this on exit
-		ProfileSystem profile_system = null;
+		public static ProfileSystem profile_system = null;
 
 		// Game stuff
 		MainMenu main_menu;
+		bool delete_main_menu = false;
+		bool SinglePlayer = true;
 
 		public this()
 		{
@@ -102,6 +104,10 @@ namespace bh
 		{
 			total_time += _elapsedTime;
 			base.OnFrame(_elapsedTime);
+			if (delete_main_menu)
+			{
+				DeleteMainMenu();
+			}
 			netManager.Update(_elapsedTime);
 			world.Update(_elapsedTime);
 		}
@@ -172,9 +178,8 @@ namespace bh
 
 		void OnSinglePlayerClicked()
 		{
-			netManager.StartSinglePlayer();
-			world.RemoveComponent(GameEntity, main_menu, true);
-			main_menu = null;
+			delete_main_menu = true;
+			SinglePlayer = true;
 		}
 
 		void OnJoinedLobby(Lobby lobby)
@@ -182,13 +187,14 @@ namespace bh
 #if !ARI_SERVER
 			network.Connect(lobby.serverIp, lobby.serverPort);
 #endif
-			world.RemoveComponent(GameEntity, main_menu, true);
-			main_menu = null;
+			delete_main_menu = true;
+			SinglePlayer = false;
 		}
 
 		void OnMultiPlayerClicked()
 		{
 			profile_system.AutoJoinToLobby();
+			main_menu.Status = .FindingLobby;
 			return;
 		}
 
@@ -201,6 +207,22 @@ namespace bh
 		{
 			Console.WriteLine("Welcome {}", player.userName);
 			delete player;
+			if (main_menu != null)
+				main_menu.Status = .LoggedIn;
+		}
+
+		void DeleteMainMenu()
+		{
+			delete_main_menu = false;
+			if (main_menu != null)
+			{
+				world.RemoveComponent(GameEntity, main_menu, true);
+				main_menu = null;
+			}
+			if (SinglePlayer)
+			{
+				netManager.StartSinglePlayer();
+			}
 		}
 
 		public override void OnCleanup()
@@ -210,12 +232,12 @@ namespace bh
 			delete scene_system;
 			delete gui_system;
 			delete _fs;
-
 			if (main_menu != null)
 			{
 				world.RemoveComponent(GameEntity, main_menu, true);
 				main_menu = null;
 			}
+
 			delete GameEntity;
 
 			delete netManager;

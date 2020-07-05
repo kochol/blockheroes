@@ -22,11 +22,22 @@ namespace bh.gui
 		}
 		public MenuStatus Status = .LoggingIn;
 
+		RegisterLogin login_form = null;
+
 		public this()
 		{
 			if (tex_Buttons.Handle == uint32.MaxValue)
 			{
 				tex_Buttons = Gfx.LoadTexture("res:menu.png");
+			}
+		}
+
+		public ~this()
+		{
+			if (login_form != null)
+			{
+				_world.RemoveComponent(Handle.Owner, login_form, true);
+				login_form = null;
 			}
 		}
 
@@ -78,6 +89,19 @@ namespace bh.gui
 					{
 						GameApp.profile_system.CancelAutoJoinToLobby();
 						Status = .LoggedIn;
+					}
+				}
+
+				if (ImGui.Button("Test Login"))
+				{
+					if (login_form == null)
+					{
+						login_form = new RegisterLogin();
+						_world.AddComponent(Handle.Owner, login_form);
+					}
+					else if (!login_form.IsOpen)
+					{
+						login_form.IsOpen = true;
 					}
 				}
 

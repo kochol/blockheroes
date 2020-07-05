@@ -74,8 +74,7 @@ namespace bh.gui
 				if (Status == .FindingLobby)
 				{
 					ImGui.Text("Searching for opponent");
-					ImGui.SameLine();
-					if (ImGui.SmallButton("Cancel"))
+					if (ImGui.Button("Cancel"))
 					{
 						GameApp.profile_system.CancelAutoJoinToLobby();
 						Status = .LoggedIn;

@@ -42,7 +42,6 @@ namespace bh
 		// Game stuff
 		MainMenu main_menu;
 		bool delete_main_menu = false;
-		bool SinglePlayer = true;
 
 		public this()
 		{
@@ -179,7 +178,8 @@ namespace bh
 		void OnSinglePlayerClicked()
 		{
 			delete_main_menu = true;
-			SinglePlayer = true;
+
+			netManager.StartSinglePlayer();
 		}
 
 		void OnJoinedLobby(Lobby lobby)
@@ -188,7 +188,6 @@ namespace bh
 			network.Connect(lobby.serverIp, lobby.serverPort);
 #endif
 			delete_main_menu = true;
-			SinglePlayer = false;
 		}
 
 		void OnMultiPlayerClicked()
@@ -218,10 +217,6 @@ namespace bh
 			{
 				world.RemoveComponent(GameEntity, main_menu, true);
 				main_menu = null;
-			}
-			if (SinglePlayer)
-			{
-				netManager.StartSinglePlayer();
 			}
 		}
 

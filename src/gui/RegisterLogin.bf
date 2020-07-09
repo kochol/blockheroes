@@ -8,24 +8,32 @@ namespace bh.gui
 	{
 		public bool IsOpen = true;
 		bool CallEnd;
-		String UserName = new String(40) ~ delete _;
-		String Password = new String(40) ~ delete _;
+		char8[40] UserName;
+		char8[40] Password;
 
 		protected override bool BeginRender()
 		{
 			CallEnd = IsOpen;
 			if (IsOpen && ImGui.Begin("RegisterLogin", &IsOpen))
 			{
-				ImGui.InputText("UserName", UserName, 40);
-				ImGui.InputText("PassWord", Password, 40, .Password);
+				ImGui.InputText("UserName", &UserName[0], 40);
+				ImGui.InputText("PassWord", &Password[0], 40, .Password);
 				if (ImGui.Button("Login"))
 				{
-					GameApp.profile_system.Login(UserName, Password);
+					String username = scope String();
+					username.Reference(&UserName[0]);
+					String password = scope String();
+					password.Reference(&Password[0]);
+					GameApp.profile_system.Login(username, password);
 				}
 				ImGui.SameLine(0, 100);
 				if (ImGui.Button("Register"))
 				{
-					GameApp.profile_system.Register(UserName, Password);
+					String username = scope String();
+					username.Reference(&UserName[0]);
+					String password = scope String();
+					password.Reference(&Password[0]);
+					GameApp.profile_system.Register(username, password);
 				}
 				return true;
 			}

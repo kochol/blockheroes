@@ -188,6 +188,7 @@ namespace bh
 		{
 #if !ARI_SERVER
 			network.Connect(lobby.serverIp, lobby.serverPort);
+			delete lobby;
 #endif
 			delete_main_menu = true;
 		}

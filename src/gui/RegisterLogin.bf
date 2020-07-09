@@ -1,5 +1,6 @@
 using ari.gui;
 using imgui_beef;
+using System;
 
 namespace bh.gui
 {
@@ -7,19 +8,25 @@ namespace bh.gui
 	{
 		public bool IsOpen = true;
 		bool CallEnd;
-		char8[40] UserName;
-		char8[40] Password;
+		String UserName = new String(40) ~ delete _;
+		String Password = new String(40) ~ delete _;
 
 		protected override bool BeginRender()
 		{
 			CallEnd = IsOpen;
 			if (IsOpen && ImGui.Begin("RegisterLogin", &IsOpen))
 			{
-				ImGui.InputText("UserName", &UserName[0], 40);
-				ImGui.InputText("PassWord", &Password[0], 40, .Password);
-				ImGui.Button("Login");
+				ImGui.InputText("UserName", UserName, 40);
+				ImGui.InputText("PassWord", Password, 40, .Password);
+				if (ImGui.Button("Login"))
+				{
+					GameApp.profile_system.Login(UserName, Password);
+				}
 				ImGui.SameLine(0, 100);
-				ImGui.Button("Register");
+				if (ImGui.Button("Register"))
+				{
+					GameApp.profile_system.Register(UserName, Password);
+				}
 				return true;
 			}
 			return false;

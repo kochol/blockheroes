@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using bh.net;
 using bh.gui;
+using curl;
 
 namespace bh
 {
@@ -83,6 +84,7 @@ namespace bh
 
 			profile_system = new ProfileSystem("https://localhost:44327/api/", http);
 			profile_system.OnLoggedIn = new => OnLoggedIn;
+			profile_system.OnLoginFailed = new => OnLogginFailed;
 			profile_system.OnPlayerData = new => OnPlayerData;
 			profile_system.OnJoinedLobby = new => OnJoinedLobby;
 			profile_system.Login();
@@ -200,6 +202,12 @@ namespace bh
 		void OnLoggedIn()
 		{
 			profile_system.GetPlayerData();
+		}
+
+		void OnLogginFailed(Easy.ReturnCode err)
+		{
+			Console.WriteLine(err);
+			main_menu.Status = .LogginFailed;
 		}
 
 		void OnPlayerData(Player player)

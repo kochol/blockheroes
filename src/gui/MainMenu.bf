@@ -92,7 +92,7 @@ namespace bh.gui
 					}
 				}
 
-				if (ImGui.Button("Test Login"))
+				if (Status == .LoggedIn && ImGui.Button("Test Login"))
 				{
 					if (login_form == null)
 					{
@@ -102,6 +102,16 @@ namespace bh.gui
 					else if (!login_form.IsOpen)
 					{
 						login_form.IsOpen = true;
+					}
+				}
+				else if (Status == .LogginFailed)
+				{
+					// Show retry button
+					ImGui.Text("Failed to connect to server");
+					if (ImGui.Button("Retry"))
+					{
+						GameApp.profile_system.Login();
+						Status = .LoggingIn;
 					}
 				}
 

@@ -254,7 +254,7 @@ namespace bh.net
 			if (key_time < KeyUpdateDelay && last_key == _key)
 				return;
 			key_time = 0;
-			if (_key == .Down)
+			if (_key == .Down) // comment this line for: Don't go down while player move the block
 				time = 0;
 			last_key = _key;
 

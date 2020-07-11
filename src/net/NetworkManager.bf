@@ -42,7 +42,8 @@ namespace bh.net
 		float key_time = 0;
 		KeyType last_key = .Drop;
 		const float UpdateTime = 0.5f;
-		const float KeyUpdateDelay = 0.1f;
+		const float KeyUpdateDelay = 0.05f;
+		float GameTime = 0;
 
 		// log file
 #if !BF_PLATFORM_ANDROID
@@ -168,14 +169,20 @@ namespace bh.net
 				network.CallRPC(client_id, m_rpc_on_opponent_connect_client, i.key);
 			}
 			if (clients.Count > 1)
+			{
 				// start the game
 				network.CallRPC(m_rpc_start_game);
+				// tell the server game started
+				GameApp.profile_system.ServerStartGame(GameApp.LobbyId);
+			}
 		}
 
 		void OnClientDisconnected(int32 client_id)
 		{
 			delete clients[client_id];
 			clients.Remove(client_id);
+
+			ExitServer();
 
 			if (clients.Count == 0)
 			{
@@ -185,6 +192,11 @@ namespace bh.net
 					blocks.Add((BlockType)rnd.Next(7));
 				game_started = false;
 			}
+		}
+
+		void ExitServer()
+		{
+			Application.Exit = true;
 		}
 
 		public this(ServerSystem _network, World _world)
@@ -274,8 +286,18 @@ namespace bh.net
 
 		public void Update(float _elasped_time)
 		{
+			GameTime += _elasped_time;
+
 			if (!game_started)
+			{
+#if ARI_SERVER
+				if (GameTime > 30) // Exit the server if the game does not started after 30 seconds
+				{
+					ExitServer();
+				}
+#endif // ARI_SERVER
 				return;
+			}
 
 			bool update_time = true;
 			for (var c in clients)

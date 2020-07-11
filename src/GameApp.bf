@@ -36,6 +36,8 @@ namespace bh
 		NetworkManager netManager;
 		public static String IP = "104.244.75.183";//"127.0.0.1";//
 		public static int32 Port = 55223;
+		public static String Token = null ~ delete _;
+		public static int64 LobbyId = 0;
 
 		// Profile server: The world will delete this on exit
 		public static ProfileSystem profile_system = null;
@@ -87,7 +89,14 @@ namespace bh
 			profile_system.OnLoginFailed = new => OnLogginFailed;
 			profile_system.OnPlayerData = new => OnPlayerData;
 			profile_system.OnJoinedLobby = new => OnJoinedLobby;
+#if ARI_SERVER
+			if (Token != null)
+			{
+				profile_system.Login(Token);
+			}
+#else			
 			profile_system.Login();
+#endif
 			world.AddSystem(profile_system);
 
 			// Game stuff

@@ -40,7 +40,7 @@ BeefLibType = "Static"
 RelocType = "PIC"
 
 [Configs.ServerDebug.Linux64]
-OtherLinkFlags = "$(LinkFlags) /mnt/d/my/fips/ariyana/Beef/dist/linux64/ServerDebug/libcari.so /mnt/d/my/fips/ariyana/Beef/deps/CurlBeef/dist/linux64/libcurl.a"
+OtherLinkFlags = "$(LinkFlags) -lcari -lcurl -lssl -lcrypto -lz -lpthread"
 BeefLibType = "Static"
-LibPaths = ["$(ProjectDir)/dist/linux64/ServerDebug"]
+LibPaths = ["-L$(ProjectDir)/../ariyana/Beef/dist/linux64/ServerDebug", "-L$(ProjectDir)/../ariyana/Beef/deps/CurlBeef/dist/linux64"]
 PreprocessorMacros = ["DEBUG", "ARI_SERVER"]

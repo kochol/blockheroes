@@ -55,7 +55,6 @@ namespace bh.gui
 				ImGui.PushStyleColor(.ButtonActive, 0);
 				ImGui.PushStyleColor(.ButtonHovered, 0);
 
-#if !ARI_SERVER				
 				// Single player button
 				ImGui.PushID("single_player");
 				if (ImGui.ImageButton((void*)(uint)tex_Buttons.Index, .(216, 79), .(0.0390625f, 0.015625f), .(0.0390625f + 0.421875f, 0.015625f + 0.154296f)))
@@ -79,7 +78,6 @@ namespace bh.gui
 						.(0.2f, 0.2f, 0.2f, 1));
 				}
 				ImGui.PopID();
-#endif
 
 				ImGui.PopStyleColor(3);
 

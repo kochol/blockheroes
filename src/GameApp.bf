@@ -84,7 +84,7 @@ namespace bh
 			HttpClientService http = new HttpClientService();
 			world.AddSystem(http);
 
-			profile_system = new ProfileSystem("https://localhost:44327/api/", http);
+			profile_system = new ProfileSystem("https://blockheroesgame.com/api/", http);
 			profile_system.OnLoggedIn = new => OnLoggedIn;
 			profile_system.OnLoginFailed = new => OnLogginFailed;
 			profile_system.OnPlayerData = new => OnPlayerData;

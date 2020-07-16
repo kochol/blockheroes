@@ -140,7 +140,7 @@ namespace bh
 					netManager.HandleInput(.Right);
 				if (_event.key_code == .ARI_KEYCODE_DOWN)
 					netManager.HandleInput(.Down);
-				if (_event.key_code == .ARI_KEYCODE_SPACE)
+				if (_event.key_code == .ARI_KEYCODE_SPACE && !_event.key_repeat)
 					netManager.HandleInput(.Drop);
 			}
 			else if (_event.type == .ARI_EVENTTYPE_TOUCHES_BEGAN)

@@ -233,8 +233,8 @@ namespace bh.game
 			{
 			case .Box: block_color = Color.YELLOW;
 			case .I: block_color = Color.SKYBLUE;
-			case .L: block_color = Color.PINK;
-			case .RL: block_color = Color.VIOLET;
+			case .L: block_color = Color.PINK; direction = .East;
+			case .RL: block_color = Color.VIOLET; direction = .West;
 			case .RZ: block_color = Color.MAGENTA;
 			case .T: block_color = Color.PURPLE;
 			case .Z: block_color = Color.RED;

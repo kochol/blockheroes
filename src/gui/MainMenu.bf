@@ -5,11 +5,12 @@ using imgui_beef;
 
 namespace bh.gui
 {
+	delegate void OnButtonClickDelegate();
+
 	public class MainMenu: ScriptGui
 	{
 		public static TextureHandle tex_Buttons = .();
 
-		public delegate void OnButtonClickDelegate();
 		public OnButtonClickDelegate OnSinglePlayerClick = null ~ delete _;
 		public OnButtonClickDelegate OnMultiPlayerClick = null ~ delete _;
 

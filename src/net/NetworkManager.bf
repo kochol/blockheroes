@@ -33,7 +33,8 @@ namespace bh.net
 		List<BlockType> blocks = new List<BlockType>(50) ~ delete _;
 		Random rnd = new Random() ~ delete _;
 
-		bool game_started = false;
+		public bool game_started = false;
+		public bool GamePaused = false;
 		bool single_player = false;
 		World world;
 
@@ -45,43 +46,22 @@ namespace bh.net
 		const float KeyUpdateDelay = 0.05f;
 		float GameTime = 0;
 
-		// log file
-#if !BF_PLATFORM_ANDROID
-		System.IO.StreamWriter loger = new System.IO.StreamWriter() ~ delete _;
-		System.IO.StreamWriter logerInput = new System.IO.StreamWriter() ~ delete _;
-#endif
 		int32 counter = 0;
 
 		void OnConnect(int32 client_id)
 		{
-#if !BF_PLATFORM_ANDROID
-			var str = scope String();
-			client_id.ToString(str);
-			str.Append("log.txt");
-			loger.Create(str);
-			str.Clear();
-			client_id.ToString(str);
-			str.Append("log_input.txt");
-			logerInput.Create(str);
-#endif			
 			Console.WriteLine("Connected to server: {0}", client_id);
 			my_client_id = client_id;
 		}
 
 		void OnApplyPunishment(int32 _client_id)
 		{
-#if !BF_PLATFORM_ANDROID
-			loger.WriteLine("OnApplyPunishment {}", _client_id);
-#endif
 			if (my_client_id != _client_id)
 				clients[_client_id].ApplyPunishment();
 		}
 
 		void OnPunishment(int32 _client_id, int8 _block_hole)
 		{
-#if !BF_PLATFORM_ANDROID
-			loger.WriteLine("OnPunishment {} {}", _client_id, _block_hole);
-#endif
 			clients[_client_id].AddPunishment(_block_hole);
 		}
 
@@ -209,8 +189,6 @@ namespace bh.net
 			network = _network;
 			world = _world;
 #if ARI_SERVER
-			loger.Create("log_server.txt");
-			logerInput.Create("log_input_server.txt");
 			network.OnClientConnected = new => this.OnClientConnected;
 			network.OnClientDisconnected = new => this.OnClientDisconnected;
 			for (int i = 0; i < 50; i++)
@@ -235,9 +213,6 @@ namespace bh.net
 		// Server calls this to update the inputs
 		void HandleInput(int32 client_id, KeyType _key, int32 c)
 		{
-#if !BF_PLATFORM_ANDROID
-			loger.WriteLine("HandleInput: {} {} {}", client_id, _key, c);
-#endif
 			if (!game_started || client_id == my_client_id)
 				return;
 
@@ -251,10 +226,6 @@ namespace bh.net
 				return;
 			var client_id = Net.GetLastRpcClientIndex();
 			network.CallRPC(m_rpc_on_input, client_id, _key, counter++);
-
-#if !BF_PLATFORM_ANDROID
-			logerInput.WriteLine("{} {}", client_id, _key);
-#endif
 		}
 
 		// Handle input on client
@@ -272,11 +243,6 @@ namespace bh.net
 
 			network.CallRPC(m_rpc_on_input_server, _key);
 			clients[my_client_id].HandleInput(_key);
-
-#if !BF_PLATFORM_ANDROID
-			logerInput.WriteLine("{} {}", my_client_id, _key);
-#endif
-
 		}
 
 		public void AddBlockType(BlockType _type)
@@ -286,6 +252,9 @@ namespace bh.net
 
 		public void Update(float _elasped_time)
 		{
+			if (single_player && GamePaused)
+				return;
+
 			GameTime += _elasped_time;
 
 			if (!game_started)
@@ -345,9 +314,6 @@ namespace bh.net
 			{
 				network.CallRPC<KeyType>(m_rpc_on_input_server, .Down);
 				clients[my_client_id].HandleInput(.Down);
-#if !BF_PLATFORM_ANDROID
-			logerInput.WriteLine("{} {}", my_client_id, KeyType.Down);
-#endif
 			}
 		} // Update
 
@@ -360,6 +326,28 @@ namespace bh.net
 			for (int i = 0; i < 50; i++)
 				blocks.Add((BlockType)rnd.Next(7));
 			single_player = true;
+		}
+
+		public void ResetGame()
+		{
+			Runtime.Assert(single_player);
+			delete clients[0];
+			clients.Remove(0);
+			StartSinglePlayer();
+			GamePaused = false;
+		}
+
+		public void Exit()
+		{
+			for (var value in clients)
+			{
+				delete value.value;
+			}
+			clients.Clear();
+			single_player = false;
+			my_client_id = -1;
+			game_started = false;
+			GamePaused = false;
 		}
 	}
 }

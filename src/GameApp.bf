@@ -44,7 +44,7 @@ namespace bh
 
 		// Game stuff
 		MainMenu main_menu;
-		bool delete_main_menu = false;
+		InGameMenu in_game_menu;
 
 		public this()
 		{
@@ -102,11 +102,27 @@ namespace bh
 			// Game stuff
 			GameEntity = World.CreateEntity();
 
+			// main menu
 			main_menu = new MainMenu();
 			main_menu.OnSinglePlayerClick = new => OnSinglePlayerClicked;
 			main_menu.OnMultiPlayerClick = new => OnMultiPlayerClicked;
-
 			world.AddComponent(GameEntity, main_menu);
+
+			// in game gui
+			in_game_menu = new InGameMenu();
+			*in_game_menu.Visible = false;
+			in_game_menu.ShowReset = &netManager.[Friend] single_player;
+			in_game_menu.OnResetClick = new () => { // On reset click
+				netManager.ResetGame();
+				*in_game_menu.Visible = false;
+			};
+			in_game_menu.OnExitClick = new () => { // On exit click
+				netManager.Exit();
+				*main_menu.Visible = true;
+				*in_game_menu.Visible = false;
+			};
+			world.AddComponent(GameEntity, in_game_menu);
+
 			world.AddEntity(GameEntity);
 		}
 
@@ -114,10 +130,6 @@ namespace bh
 		{
 			total_time += _elapsedTime;
 			base.OnFrame(_elapsedTime);
-			if (delete_main_menu)
-			{
-				DeleteMainMenu();
-			}
 			netManager.Update(_elapsedTime);
 			world.Update(_elapsedTime);
 		}
@@ -142,6 +154,12 @@ namespace bh
 					netManager.HandleInput(.Down);
 				if (_event.key_code == .ARI_KEYCODE_SPACE && !_event.key_repeat)
 					netManager.HandleInput(.Drop);
+				if (netManager.game_started && _event.key_code == .ARI_KEYCODE_ESCAPE && !_event.key_repeat)
+				{
+					// Show in game menu
+					*in_game_menu.Visible = !*in_game_menu.Visible;
+					netManager.GamePaused = *in_game_menu.Visible;
+				}
 			}
 			else if (_event.type == .ARI_EVENTTYPE_TOUCHES_BEGAN)
 			{
@@ -188,8 +206,7 @@ namespace bh
 
 		void OnSinglePlayerClicked()
 		{
-			delete_main_menu = true;
-
+			*main_menu.Visible = false;
 			netManager.StartSinglePlayer();
 		}
 
@@ -199,7 +216,7 @@ namespace bh
 			network.Connect(lobby.serverIp, lobby.serverPort);
 			delete lobby;
 #endif
-			delete_main_menu = true;
+			*main_menu.Visible = false;
 		}
 
 		void OnMultiPlayerClicked()
@@ -228,16 +245,6 @@ namespace bh
 				main_menu.Status = .LoggedIn;
 		}
 
-		void DeleteMainMenu()
-		{
-			delete_main_menu = false;
-			if (main_menu != null)
-			{
-				world.RemoveComponent(GameEntity, main_menu, true);
-				main_menu = null;
-			}
-		}
-
 		public override void OnCleanup()
 		{
 			base.OnCleanup();
@@ -245,11 +252,8 @@ namespace bh
 			delete scene_system;
 			delete gui_system;
 			delete _fs;
-			if (main_menu != null)
-			{
-				world.RemoveComponent(GameEntity, main_menu, true);
-				main_menu = null;
-			}
+			world.RemoveComponent(GameEntity, main_menu, true);
+			world.RemoveComponent(GameEntity, in_game_menu, true);
 
 			delete GameEntity;
 

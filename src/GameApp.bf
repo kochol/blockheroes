@@ -2,6 +2,7 @@ using ari;
 using ari.gui;
 using ari.user;
 using ari.net;
+using ari.biz;
 using bh.game;
 using System;
 using System.Collections;
@@ -26,6 +27,7 @@ namespace bh
 		float touch_start_time;
 		bool MovedWithTouch;
 		bool MovedDownWithTouch;
+		public static GoogleAnalytics Analytics = null;
 
 		// network
 #if ARI_SERVER
@@ -115,11 +117,19 @@ namespace bh
 			in_game_menu.OnResetClick = new () => { // On reset click
 				netManager.ResetGame();
 				*in_game_menu.Visible = false;
+				if (Analytics != null)
+				{
+					Analytics.Event("GUI", "Reset");
+				}
 			};
 			in_game_menu.OnExitClick = new () => { // On exit click
 				netManager.Exit();
 				*main_menu.Visible = true;
 				*in_game_menu.Visible = false;
+				if (Analytics != null)
+				{
+					Analytics.TrackScreenView("MainMenu");
+				}
 			};
 			world.AddComponent(GameEntity, in_game_menu);
 
@@ -208,6 +218,10 @@ namespace bh
 		{
 			*main_menu.Visible = false;
 			netManager.StartSinglePlayer();
+			if (Analytics != null)
+			{
+				Analytics.TrackScreenView("SinglePlayer");
+			}
 		}
 
 		void OnJoinedLobby(Lobby lobby)
@@ -216,11 +230,19 @@ namespace bh
 			network.Connect(lobby.serverIp, lobby.serverPort);
 			delete lobby;
 #endif
+			if (Analytics != null)
+			{
+				Analytics.TrackScreenView("MultiPlayer");
+			}
 			*main_menu.Visible = false;
 		}
 
 		void OnMultiPlayerClicked()
 		{
+			if (Analytics != null)
+			{
+				Analytics.Event("GUI", "MultiPlayer");
+			}
 			profile_system.AutoJoinToLobby();
 			main_menu.Status = .FindingLobby;
 			return;
@@ -235,11 +257,38 @@ namespace bh
 		{
 			Console.WriteLine(err);
 			main_menu.Status = .LogginFailed;
+
+			// Create Analytics
+			if (Analytics == null)
+			{
+				HttpClientService http = new HttpClientService();
+				world.AddSystem(http);
+				Analytics = new GoogleAnalytics("UA-66345235-4", "Block heroes", "0.2", null , http);
+				Analytics.TrackScreenView("MainMenu");
+			}
+			Analytics.Event("ProfileServer", "Login", "Failed");
 		}
 
 		void OnPlayerData(Player player)
 		{
 			Console.WriteLine("Welcome {}", player.userName);
+
+			// Create Analytics
+			if (Analytics == null)
+			{
+				HttpClientService http = new HttpClientService();
+				world.AddSystem(http);
+				Analytics = new GoogleAnalytics("UA-66345235-4", "Block heroes", "0.2", player.userName , http);
+				Analytics.TrackScreenView("MainMenu");
+			}
+			else
+			{
+				var pid = new String();
+				player.id.ToString(pid);
+				delete Analytics.[Friend]m_sPlayerID;
+				Analytics.[Friend]m_sPlayerID = pid;
+			}
+	
 			delete player;
 			if (main_menu != null)
 				main_menu.Status = .LoggedIn;
@@ -247,6 +296,11 @@ namespace bh
 
 		public override void OnCleanup()
 		{
+			if (Analytics != null)
+			{
+				Analytics.EndSession();
+				delete Analytics;
+			}
 			base.OnCleanup();
 			delete render_system;
 			delete scene_system;

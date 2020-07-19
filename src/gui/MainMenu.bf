@@ -90,6 +90,10 @@ namespace bh.gui
 					{
 						GameApp.profile_system.CancelAutoJoinToLobby();
 						Status = .LoggedIn;
+						if (GameApp.Analytics != null)
+						{
+							GameApp.Analytics.Event("GUI", "Cancel search");
+						}
 					}
 				}
 

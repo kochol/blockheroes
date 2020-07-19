@@ -27,7 +27,10 @@ namespace bh
 		float touch_start_time;
 		bool MovedWithTouch;
 		bool MovedDownWithTouch;
+
+		// Analytics
 		public static GoogleAnalytics Analytics = null;
+		public static uint64 MultiTime;
 
 		// network
 #if ARI_SERVER
@@ -233,12 +236,14 @@ namespace bh
 			if (Analytics != null)
 			{
 				Analytics.TrackScreenView("MultiPlayer");
+				Analytics.Timing("Lobby", "Found", (int32)Timer.ToMilliSeconds(Timer.Since(MultiTime)));
 			}
 			*main_menu.Visible = false;
 		}
 
 		void OnMultiPlayerClicked()
 		{
+			MultiTime =	Timer.Now();
 			if (Analytics != null)
 			{
 				Analytics.Event("GUI", "MultiPlayer");
@@ -296,11 +301,6 @@ namespace bh
 
 		public override void OnCleanup()
 		{
-			if (Analytics != null)
-			{
-				Analytics.EndSession();
-				delete Analytics;
-			}
 			base.OnCleanup();
 			delete render_system;
 			delete scene_system;
@@ -312,6 +312,13 @@ namespace bh
 			delete GameEntity;
 
 			delete netManager;
+
+			if (Analytics != null)
+			{
+				Analytics.EndSession();
+				delete Analytics;
+				Analytics = null;
+			}
 
 			network.Stop();
 			delete network;

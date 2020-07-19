@@ -38,6 +38,9 @@ namespace bh.net
 		bool single_player = false;
 		World world;
 
+		bool is_in_game = false;
+		uint64 game_start_time;
+
 		// time values
 		float time = 0;
 		float key_time = 0;
@@ -52,6 +55,8 @@ namespace bh.net
 		{
 			Console.WriteLine("Connected to server: {0}", client_id);
 			my_client_id = client_id;
+			is_in_game = true;
+			game_start_time = Timer.Now();
 		}
 
 		void OnApplyPunishment(int32 _client_id)
@@ -210,6 +215,24 @@ namespace bh.net
 			m_rpc_on_apply_new_line_multicast = Net.AddRPC<int32>("OnApplyNewLineMultiCast", .MultiCast, new => OnApplyNewLineMultiCast, true);
 		}
 
+		public ~this()
+		{
+			GameEnded();
+		}
+
+		void GameEnded()
+		{
+			if (is_in_game && GameApp.Analytics != null)
+			{
+				int32 time = (int32)Timer.ToMilliSeconds(Timer.Since(game_start_time));
+				if (single_player)
+					GameApp.Analytics.Timing("Play", "Single player", time);
+				else
+					GameApp.Analytics.Timing("Play", "Multi player", time);
+			}
+			is_in_game = false;
+		}
+
 		// Server calls this to update the inputs
 		void HandleInput(int32 client_id, KeyType _key, int32 c)
 		{
@@ -280,7 +303,7 @@ namespace bh.net
 				c.value.Update(_elasped_time);
 			}
 
-			if (!update_time || !game_started)
+			if (!update_time)
 				return;
 
 			time += _elasped_time;
@@ -333,6 +356,7 @@ namespace bh.net
 			Runtime.Assert(single_player);
 			delete clients[0];
 			clients.Remove(0);
+			GameEnded();
 			StartSinglePlayer();
 			GamePaused = false;
 		}
@@ -344,6 +368,7 @@ namespace bh.net
 				delete value.value;
 			}
 			clients.Clear();
+			GameEnded();
 			single_player = false;
 			my_client_id = -1;
 			game_started = false;

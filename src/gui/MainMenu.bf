@@ -93,6 +93,7 @@ namespace bh.gui
 						if (GameApp.Analytics != null)
 						{
 							GameApp.Analytics.Event("GUI", "Cancel search");
+							GameApp.Analytics.Timing("Lobby", "Found", (int32)Timer.ToMilliSeconds(Timer.Since(GameApp.MultiTime)));
 						}
 					}
 				}

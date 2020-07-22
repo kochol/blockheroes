@@ -224,6 +224,7 @@ namespace bh
 			if (Analytics != null)
 			{
 				Analytics.TrackScreenView("SinglePlayer");
+				Analytics.Event("GUI", "SinglePlayer");
 			}
 		}
 
@@ -239,6 +240,7 @@ namespace bh
 				Analytics.Timing("Lobby", "Found", (int32)Timer.ToMilliSeconds(Timer.Since(MultiTime)));
 			}
 			*main_menu.Visible = false;
+			main_menu.Status = .LoggedIn;
 		}
 
 		void OnMultiPlayerClicked()

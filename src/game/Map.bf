@@ -24,6 +24,12 @@ namespace bh.game
 		bool is_player = false;
 		bool CanApplyNewLine = false;
 
+		// Scores
+		int32[7] BlockCount;
+		int32[5] ClearedLines;
+		int32 ClearedLineCount;
+		int32 SendLineCount;
+
 		public void ApplyNewLine()
 		{
 			Runtime.Assert(!CanApplyNewLine && state == .NeedNewBlock);
@@ -150,6 +156,7 @@ namespace bh.game
 					apply_new_line();
 
 				BlockType bt = blocks[last_block];
+				BlockCount[(int)bt]++;
 				last_block++;
 				active_block = World.CreateEntity<Block>();
 				active_block.Init(world, bt, Vector2(5, 18), this);
@@ -266,6 +273,7 @@ namespace bh.game
 			state = .NeedNewBlock;
 
 			// check for line clean up
+			int clearedCount = 0;
 			for (int j = 0; j < 20; j++)
 			{
 				for (int i = 0; i < 10; i++)
@@ -282,7 +290,12 @@ namespace bh.game
 							data[di, j] = null;
 						}
 
+						ClearedLineCount++;
+						clearedCount++;
+
 						cleard_block_combo++;
+						if (cleard_block_combo > 1)
+							SendLineCount ++;
 #if ARI_SERVER
 						// send the punishment to the opponent
 						if (cleard_block_combo > 1 && send_punishment_from != null)
@@ -295,6 +308,8 @@ namespace bh.game
 					}
 				}
 			}
+			if (clearedCount > 0)
+				ClearedLines[clearedCount - 1]++;
 
 			// Apply the punishments
 			if (is_player)

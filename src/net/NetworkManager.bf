@@ -368,6 +368,7 @@ namespace bh.net
 				delete value.value;
 			}
 			clients.Clear();
+			network.Stop();
 			GameEnded();
 			single_player = false;
 			my_client_id = -1;

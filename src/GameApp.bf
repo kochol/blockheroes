@@ -28,6 +28,9 @@ namespace bh
 		bool MovedWithTouch;
 		bool MovedDownWithTouch;
 
+		// Canvas size
+		public static readonly int32 CanvasWidth = 458;
+
 		// Analytics
 		public static GoogleAnalytics Analytics = null;
 		public static uint64 MultiTime;
@@ -54,7 +57,7 @@ namespace bh
 		public this()
 		{
 			setup = new GfxSetup();
-			setup.window.Width = 660;
+			setup.window.Width = CanvasWidth * 2;
 			setup.window.Height = 640;
 			setup.window.HighDpi = true;
 			setup.swap_interval = 1;

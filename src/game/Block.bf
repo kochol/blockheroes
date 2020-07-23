@@ -84,6 +84,7 @@ namespace bh.game
 					blocks[2].x = blocks[3].x = -1;			//	[2][1]
 					blocks[1].y = blocks[2].y = 0.0f;		//  [3]
 					blocks[3].y = -1;
+					blocks[0].y = 1.0f;
 				}
 			case .RZ:
 				if (direction == .North || direction == .South)
@@ -100,6 +101,7 @@ namespace bh.game
 					blocks[1].x = blocks[0].x = 1;			//	   [2][1]
 					blocks[1].y = blocks[2].y = 0.0f;		//  	  [0]
 					blocks[0].y = -1;
+					blocks[3].y = 1.0f;
 				}
 			case .T:
 				switch (direction)
@@ -221,34 +223,47 @@ namespace bh.game
 			return s;
 		}
 
-		// Create components, Add them to world
-		public void Init(World _world, BlockType _block_type, Vector2 _pos, Map _map)
+		// This is used in next block view
+		public void SetType(BlockType _block_type)
 		{
 			block_type = _block_type;
-			position = _pos;
-			map = _map;
 
 			Color block_color;
 			switch(block_type)
 			{
-			case .Box: block_color = Color.YELLOW;
-			case .I: block_color = Color.SKYBLUE;
+			case .Box: block_color = Color.YELLOW; direction = .North;
+			case .I: block_color = Color.SKYBLUE; direction = .North;
 			case .L: block_color = Color.PINK; direction = .East;
 			case .RL: block_color = Color.VIOLET; direction = .West;
-			case .RZ: block_color = Color.MAGENTA;
-			case .T: block_color = Color.PURPLE;
-			case .Z: block_color = Color.RED;
+			case .RZ: block_color = Color.MAGENTA; direction = .North;
+			case .T: block_color = Color.PURPLE; direction = .North;
+			case .Z: block_color = Color.RED; direction = .North;
 			}
 
 			// Create components
 			for (int i = 0; i < 4; i++)
 			{
-				sprites[i] = CreateBlockSprite();
 				*sprites[i].Color = block_color;
-				_world.AddComponent(this, sprites[i]);
 			}
 
 			UpdateBlockPos();
+
+		}
+
+		// Create components, Add them to world
+		public void Init(World _world, BlockType _block_type, Vector2 _pos, Map _map)
+		{
+			position = _pos;
+			map = _map;
+
+			// Create components
+			for (int i = 0; i < 4; i++)
+			{
+				sprites[i] = CreateBlockSprite();
+				_world.AddComponent(this, sprites[i]);
+			}
+
+			SetType(_block_type);
 
 			// Add entity to world
 			_world.AddEntity(this);

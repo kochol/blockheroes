@@ -14,6 +14,7 @@ namespace bh.game
 		Sprite2D left_wall;
 		Sprite2D right_wall;
 		Block active_block = null;
+		Block next_block = null;
 		WindowHandle window_handle;
 		List<BlockType> blocks;
 		public int last_block = 0;
@@ -58,6 +59,7 @@ namespace bh.game
 			delete map_entity;
 			delete camera;
 			delete active_block;
+			delete next_block;
 			delete canvas;
 			delete left_wall;
 			delete right_wall;
@@ -87,13 +89,13 @@ namespace bh.game
 			world = _world;
 			camera = World.CreateCamera2D();
 			canvas = World.CreateCanvas();
-			canvas.Rect.width = 330;
+			canvas.Rect.width = GameApp.CanvasWidth;
 			canvas.Rect.height = 640;
 			canvas.Rect.y = 0;
 			if (_is_player)
 				canvas.Rect.x = 0;
 			else
-				canvas.Rect.x = 330;
+				canvas.Rect.x = GameApp.CanvasWidth;
 			canvas.AddChild(camera);
 
 			// add walls
@@ -162,6 +164,18 @@ namespace bh.game
 				active_block.Init(world, bt, Vector2(5, 18), this);
 				canvas.AddChild(active_block);
 				state = .BlockIsDropping;
+
+				// create next block
+				if (next_block == null)
+				{
+					next_block = World.CreateEntity<Block>();
+					next_block.Init(world, blocks[last_block], .(11.2f, 17.2f), this);
+					canvas.AddChild(next_block);
+				}
+				else if (blocks.Count > last_block)
+				{
+					next_block.SetType(blocks[last_block]);
+				}
 				return;
 			}
 		}

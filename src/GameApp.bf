@@ -255,7 +255,6 @@ namespace bh
 			}
 			profile_system.AutoJoinToLobby();
 			main_menu.Status = .FindingLobby;
-			return;
 		}
 
 		void OnLoggedIn()

@@ -212,6 +212,12 @@ namespace bh.game
 			{
 				*sprites[i].Position = (blocks[i] + position) * BlockSize + BlockSizeHalf;
 				sprites[i].Position.x += BlockOffsetx;
+				if (sprites[i].Scale.x < BlockSize)
+				{
+					let x = BlockSize - sprites[i].Scale.x;
+					sprites[i].Position.x -= blocks[i].x * x + x ;
+					sprites[i].Position.y -= blocks[i].y * x - x * 3;
+				}
 			}
 		}
 
@@ -221,6 +227,12 @@ namespace bh.game
 			s.Scale.Set(BlockSize);
 			*s.Texture = block_texture;
 			return s;
+		}
+
+		public void SetScale(float blockSize)
+		{
+			for (int i = 0; i < 4; i++)
+				sprites[i].Scale.Set(blockSize);
 		}
 
 		// This is used in next block view

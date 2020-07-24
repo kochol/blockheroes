@@ -184,6 +184,8 @@ namespace bh.game
 				{
 					next_block = World.CreateEntity<Block>();
 					next_block.Init(world, blocks[last_block], .(11.2f, 17.2f), this);
+					next_block.SetScale(23);
+					next_block.SetType(blocks[last_block]);
 					canvas.AddChild(next_block);
 				}
 				else if (blocks.Count > last_block)

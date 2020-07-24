@@ -4,6 +4,16 @@ using System;
 
 namespace bh.game
 {
+	enum CollisionStatus : int
+	{
+		NoCollid = 0,
+		Left = 1,
+		Right = 2,
+		Down = 4,
+		Up = 8,
+		Stuck = 16
+	}
+
 	public class Map
 	{
 		Sprite2D[,] data = new Sprite2D[10,20] ~ delete _;
@@ -123,20 +133,24 @@ namespace bh.game
 			world.AddEntity(map_entity);
 		}
 
-		public bool Collide(Vector2[4] block_pos, Vector2 _pos)
+		public CollisionStatus Collide(Vector2[4] block_pos, Vector2 _pos)
 		{
 			for (int i = 0; i < 4; i++)
 			{
 				Vector2 p = block_pos[i] + _pos;
 				int x = int(p.x);
 				int y = int(p.y);
-				if (x < 0 || x > 9 ||
-					y < 0 || y > 19 ||
-					data[x, y] != null)
-					return true;
+				if (x < 0)
+					return .Left;
+				if (x > 9)
+					return .Right;
+				if (y < 0 || y > 19)
+					return .Stuck;
+				if (data[x, y] != null)
+					return .Stuck; // Todo: Find where it stucked
 			}
 
-			return false;
+			return .NoCollid;
 		}
 
 		public void Update(float _elasped_time)

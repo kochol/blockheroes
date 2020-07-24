@@ -269,7 +269,7 @@ namespace bh.game
 			_world.AddEntity(this);
 		}
 
-		// return false when reach the end of map
+		// return false when can not move
 		public bool HandleInput(KeyType _key)
 		{
 			switch (_key)
@@ -300,7 +300,8 @@ namespace bh.game
 			UpdateBlockPos();
 
 			// check for collision
-			if (map.Collide(blocks, position))
+			let collide = map.Collide(blocks, position);
+			if (collide != .NoCollid)
 			{
 				// it collide something
 
@@ -308,20 +309,42 @@ namespace bh.game
 				switch (_key)
 				{
 				case .RotateCW:
-					switch (direction)
+					if (collide == .Left && HandleInput(.Right))
 					{
-					case .North: direction = .West;
-					case .East: direction = .North;
-					case .South: direction = .East;
-					case .West: direction = .South;
+
+					}
+					else if(collide == .Right && HandleInput(.Left))
+					{
+
+					}
+					else
+					{
+						switch (direction)
+						{
+						case .North: direction = .West;
+						case .East: direction = .North;
+						case .South: direction = .East;
+						case .West: direction = .South;
+						}
 					}
 				case .RotateCCW:
-					switch (direction)
+					if (collide == .Left && HandleInput(.Right))
 					{
-					case .North: direction = .East;
-					case .East: direction = .South;
-					case .South: direction = .West;
-					case .West: direction = .North;
+
+					}
+					else if(collide == .Right && HandleInput(.Left))
+					{
+
+					}
+					else
+					{
+						switch (direction)
+						{
+						case .North: direction = .East;
+						case .East: direction = .South;
+						case .South: direction = .West;
+						case .West: direction = .North;
+						}
 					}
 				case .Down: position.y += 1.0f;
 				case .Left: position.x += 1.0f;
@@ -335,8 +358,8 @@ namespace bh.game
 				{
 					// It reaches bottom of map
 					map.BlockReachedToEnd();
-					return false;
 				}
+				return false;
 
 			}
 

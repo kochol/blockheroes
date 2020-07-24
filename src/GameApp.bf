@@ -42,7 +42,7 @@ namespace bh
 		ClientSystem network = new ClientSystem();
 #endif
 		NetworkManager netManager;
-		public static String IP = "104.244.75.183";//"127.0.0.1";//
+		public static String IP = "127.0.0.1";
 		public static int32 Port = 55223;
 		public static String Token = null ~ delete _;
 		public static int64 LobbyId = 0;

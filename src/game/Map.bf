@@ -24,7 +24,8 @@ namespace bh.game
 		Sprite2D left_wall;
 		Sprite2D right_wall;
 		Block active_block = null;
-		Block next_block = null;
+		const int next_block_count = 5;
+		Block[next_block_count] next_block;
 		WindowHandle window_handle;
 		List<BlockType> blocks;
 		public int last_block = 0;
@@ -69,7 +70,8 @@ namespace bh.game
 			delete map_entity;
 			delete camera;
 			delete active_block;
-			delete next_block;
+			for (int i = 0; i < next_block_count; i++)
+				delete next_block[i];
 			delete canvas;
 			delete left_wall;
 			delete right_wall;
@@ -180,19 +182,21 @@ namespace bh.game
 				state = .BlockIsDropping;
 
 				// create next block
-				if (next_block == null)
+				for (int i = 0; i < next_block_count; i++)
 				{
-					next_block = World.CreateEntity<Block>();
-					next_block.Init(world, blocks[last_block], .(11.2f, 17.2f), this);
-					next_block.SetScale(23);
-					next_block.SetType(blocks[last_block]);
-					canvas.AddChild(next_block);
+					if (next_block[i] == null && blocks.Count > last_block + i)
+					{
+						next_block[i] = World.CreateEntity<Block>();
+						next_block[i].Init(world, blocks[last_block + i], .(11.2f, 17.2f), this);
+						next_block[i].SetScale(23);
+						next_block[i].SetType(blocks[last_block]);
+						canvas.AddChild(next_block[i]);
+					}
+					else if (blocks.Count > last_block + i)
+					{
+						next_block[i].SetType(blocks[last_block + i]);
+					}
 				}
-				else if (blocks.Count > last_block)
-				{
-					next_block.SetType(blocks[last_block]);
-				}
-				return;
 			}
 		}
 

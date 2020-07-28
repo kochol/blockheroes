@@ -187,9 +187,9 @@ namespace bh.game
 					if (next_block[i] == null && blocks.Count > last_block + i)
 					{
 						next_block[i] = World.CreateEntity<Block>();
-						next_block[i].Init(world, blocks[last_block + i], .(11.2f, 17.2f), this);
+						next_block[i].Init(world, blocks[last_block + i], .(11.2f, 17.2f - i * 3), this);
 						next_block[i].SetScale(23);
-						next_block[i].SetType(blocks[last_block]);
+						next_block[i].SetType(blocks[last_block + i]);
 						canvas.AddChild(next_block[i]);
 					}
 					else if (blocks.Count > last_block + i)

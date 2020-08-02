@@ -39,6 +39,8 @@ namespace bh.game
 
 		Map map;
 
+		public bool isGhost = false;
+
 		this(EntityHandle _handle) : base(_handle)
 		{
 			LoadTexture();
@@ -366,7 +368,7 @@ namespace bh.game
 
 				UpdateBlockPos();
 
-				if (_key == .Down)
+				if (!isGhost && _key == .Down)
 				{
 					// It reaches bottom of map
 					map.BlockReachedToEnd();

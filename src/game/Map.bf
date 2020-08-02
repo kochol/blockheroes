@@ -24,6 +24,7 @@ namespace bh.game
 		Sprite2D left_wall;
 		Sprite2D right_wall;
 		Block active_block = null;
+		Block ghost_block;
 		const int next_block_count = 5;
 		Block[next_block_count] next_block;
 		WindowHandle window_handle;
@@ -70,6 +71,7 @@ namespace bh.game
 			delete map_entity;
 			delete camera;
 			delete active_block;
+			delete ghost_block;
 			for (int i = 0; i < next_block_count; i++)
 				delete next_block[i];
 			delete canvas;
@@ -164,6 +166,11 @@ namespace bh.game
 					delete active_block;
 					active_block = null;
 				}
+				if (ghost_block != null)
+				{
+					delete ghost_block;
+					ghost_block = null;
+				}
 
 				if (blocks.Count <= last_block)
 					return;
@@ -176,6 +183,16 @@ namespace bh.game
 				BlockType bt = blocks[last_block];
 				BlockCount[(int)bt]++;
 				last_block++;
+				// Create ghost block
+				if (is_player)
+				{
+					ghost_block = World.CreateEntity<Block>();
+					ghost_block.Init(world, bt, Vector2(5, 18), this);
+					ghost_block.isGhost = true;
+					canvas.AddChild(ghost_block);
+					ghost_block.HandleInput(.Drop);
+				}
+				// Create active block
 				active_block = World.CreateEntity<Block>();
 				active_block.Init(world, bt, Vector2(5, 18), this);
 				canvas.AddChild(active_block);
@@ -206,6 +223,13 @@ namespace bh.game
 				return;
 
 			active_block.HandleInput(_key);
+
+			if (ghost_block != null && _key != .Drop && state == .BlockIsDropping)
+			{
+				ghost_block.[Friend]position = active_block.[Friend]position;
+				ghost_block.[Friend]direction = active_block.[Friend]direction;
+				ghost_block.HandleInput(.Drop);
+			}
 		}
 
 		void MoveBlocks(int y, bool down)
@@ -298,11 +322,15 @@ namespace bh.game
 					return;
 				}
 				data[x, y] = active_block.[Friend]sprites[i];
-				world.RemoveComponent(active_block, active_block.[Friend]sprites[i], false);
+				world.RemoveComponent(active_block, ref active_block.[Friend]sprites[i], false);
+				if (ghost_block != null)
+					world.RemoveComponent(ghost_block, ref ghost_block.[Friend]sprites[i], true);
 				canvas.AddChild(data[x, y]);
 				world.AddComponent(map_entity, data[x, y]);
 				active_block.[Friend]sprites[i] = null;
 			}
+			if (ghost_block != null)
+				canvas.RemoveChild(ghost_block);
 			canvas.RemoveChild(active_block);
 			state = .NeedNewBlock;
 
@@ -320,7 +348,7 @@ namespace bh.game
 						for (int di = 0; di < 10; di++)
 						{
 							canvas.RemoveChild(data[di, j]);
-							world.RemoveComponent(map_entity, data[di, j], true);
+							world.RemoveComponent(map_entity, ref data[di, j], true);
 							data[di, j] = null;
 						}
 

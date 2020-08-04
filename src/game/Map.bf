@@ -191,7 +191,7 @@ namespace bh.game
 					ghost_block = World.CreateEntity<Block>();
 					ghost_block.Init(world, bt, Vector2(5, 18), this);
 					for (int i = 0; i < 4; i++)
-						ghost_block.[Friend]sprites[i].Color.a = 0.5f; //Set(0.5f);
+						ghost_block.[Friend]sprites[i].Color.a = 0.4f; //Set(0.5f);
 					ghost_block.isGhost = true;
 					canvas.AddChild(ghost_block);
 					ghost_block.HandleInput(.Drop);

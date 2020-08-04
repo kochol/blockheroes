@@ -168,15 +168,6 @@ namespace bh.net
 			clients.Remove(client_id);
 
 			ExitServer();
-
-			if (clients.Count == 0)
-			{
-				// Create new blocks for the next game
-				blocks.Clear();
-				for (int i = 0; i < 50; i++)
-					blocks.Add((BlockType)rnd.Next(7));
-				game_started = false;
-			}
 		}
 
 		void ExitServer()

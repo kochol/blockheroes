@@ -144,11 +144,13 @@ namespace bh.game
 				Vector2 p = block_pos[i] + _pos;
 				int x = int(p.x);
 				int y = int(p.y);
+				if (y > 19)
+					continue;
 				if (x < 0)
 					return .Left;
 				if (x > 9)
 					return .Right;
-				if (y < 0 || y > 19)
+				if (y < 0)
 					return .Stuck;
 				if (data[x, y] != null)
 					return .Stuck; // Todo: Find where it stucked
@@ -189,7 +191,7 @@ namespace bh.game
 					ghost_block = World.CreateEntity<Block>();
 					ghost_block.Init(world, bt, Vector2(5, 18), this);
 					for (int i = 0; i < 4; i++)
-						ghost_block.[Friend]sprites[i].Color.Set(0.5f);
+						ghost_block.[Friend]sprites[i].Color.a = 0.5f; //Set(0.5f);
 					ghost_block.isGhost = true;
 					canvas.AddChild(ghost_block);
 					ghost_block.HandleInput(.Drop);

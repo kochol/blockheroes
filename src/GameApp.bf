@@ -127,6 +127,7 @@ namespace bh
 				network.PlayReplay(m.Ptr, (int32)m.Length);
 				delete d;
 				netManager.ReplayMode = true;
+				*main_menu.Visible = false;
 #endif
 			};
 

@@ -155,7 +155,7 @@ namespace bh.net
 			network.CallRPC(m_rpc_on_opponent_connect, client_id);
 			// send the blocks
 			for (int i = 0; i < blocks.Count; i++)
-				network.CallRPC(client_id, m_rpc_on_add_block_type, blocks[i]);
+				network.CallRPC(client_id, m_rpc_on_add_block_type, blocks[i], client_id);
 
 			for (var i in clients)
 			{
@@ -217,7 +217,7 @@ namespace bh.net
 			m_rpc_start_game = Net.AddRPC("StartGame", .MultiCast, new => StartGame, true);
 			m_rpc_on_input_server = Net.AddRPC<KeyType>("HandleInputServer", .Server, new => HandleInputServer, true);
 			m_rpc_on_input = Net.AddRPC<int32, KeyType, int32>("HandleInput", .MultiCast, new => HandleInput, true);
-			m_rpc_on_add_block_type = Net.AddRPC<BlockType>("AddBlockType", .Client, new => AddBlockType, true);
+			m_rpc_on_add_block_type = Net.AddRPC<BlockType, int32>("AddBlockType", .Client, new => AddBlockType, true);
 			m_rpc_on_punishment = Net.AddRPC<int32, int8>("OnPunishment", .MultiCast, new => OnPunishment, true);
 			m_rpc_on_apply_punishment = Net.AddRPC<int32>("OnApplyPunishment", .MultiCast, new => OnApplyPunishment, true);
 			m_rpc_on_apply_punishment_server = Net.AddRPC("OnApplyPunishmentServer", .Server, new => OnApplyPunishmentServer, true);
@@ -278,8 +278,9 @@ namespace bh.net
 			clients[my_client_id].HandleInput(_key);
 		}
 
-		public void AddBlockType(BlockType _type)
+		public void AddBlockType(BlockType _type, int32 client_id)
 		{
+			if (!ReplayMode || (ReplayMode && client_id == 0))
 			blocks.Add(_type);
 		}
 
@@ -335,7 +336,7 @@ namespace bh.net
 				blocks.Add(bt);
 				for (var c in clients)
 				{
-					network.CallRPC(c.key, m_rpc_on_add_block_type, bt);
+					network.CallRPC(c.key, m_rpc_on_add_block_type, bt, c.key);
 				}
 			}
 #endif

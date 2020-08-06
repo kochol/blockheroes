@@ -13,6 +13,7 @@ namespace bh.gui
 
 		public OnButtonClickDelegate OnSinglePlayerClick = null ~ delete _;
 		public OnButtonClickDelegate OnMultiPlayerClick = null ~ delete _;
+		public OnButtonClickDelegate OnLoadReplayClick = null ~ delete _;
 
 		public enum MenuStatus
 		{
@@ -81,6 +82,11 @@ namespace bh.gui
 				ImGui.PopID();
 
 				ImGui.PopStyleColor(3);
+
+				if (ImGui.Button("Load replay"))
+				{
+					OnLoadReplayClick();
+				}
 
 				// Is searching for lobby
 				if (Status == .FindingLobby)

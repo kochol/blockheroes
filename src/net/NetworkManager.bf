@@ -2,6 +2,7 @@ using ari;
 using System;
 using System.Collections;
 using bh.game;
+using System.IO;
 
 namespace bh.net
 {
@@ -35,6 +36,7 @@ namespace bh.net
 
 		public bool game_started = false;
 		public bool GamePaused = false;
+		public bool ReplayMode = false;
 		bool single_player = false;
 		World world;
 
@@ -53,6 +55,9 @@ namespace bh.net
 
 		void OnConnect(int32 client_id)
 		{
+			if (ReplayMode)
+				return;
+
 			Console.WriteLine("Connected to server: {0}", client_id);
 			my_client_id = client_id;
 			is_in_game = true;
@@ -120,8 +125,13 @@ namespace bh.net
 
 		void OnOpponentConnect(int32 client_id)
 		{
+			if (clients.ContainsKey(client_id))
+				return;
+
 			var map = new Map();
 			map.Init(world, client_id, my_client_id == client_id, blocks);
+			if (ReplayMode && client_id == 0)
+				map.[Friend]canvas.Rect.x = 0;
 			map.send_punishment_from = new => OnPunishmentFrom;
 			map.apply_punishment = new => OnPunishmentApplied;
 			map.apply_new_line = new => OnApplyNewLine;
@@ -172,6 +182,14 @@ namespace bh.net
 
 		void ExitServer()
 		{
+			// Save the replay to the file
+			if (network.GetReplaySize() > 0)
+			{
+				FileStream fs = scope FileStream();
+				fs.Open("replay.bh", .Create, .Write);
+				fs.TryWrite(.((uint8*)network.GetReplay(), network.GetReplaySize()));
+			}
+
 			Application.Exit = true;
 		}
 
@@ -185,6 +203,7 @@ namespace bh.net
 			network = _network;
 			world = _world;
 #if ARI_SERVER
+			network.RecordReplay();
 			network.OnClientConnected = new => this.OnClientConnected;
 			network.OnClientDisconnected = new => this.OnClientDisconnected;
 			for (int i = 0; i < 50; i++)

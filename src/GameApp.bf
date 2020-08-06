@@ -9,6 +9,7 @@ using System.Collections;
 using bh.net;
 using bh.gui;
 using curl;
+using System.IO;
 
 namespace bh
 {
@@ -114,6 +115,21 @@ namespace bh
 			main_menu = new MainMenu();
 			main_menu.OnSinglePlayerClick = new => OnSinglePlayerClicked;
 			main_menu.OnMultiPlayerClick = new => OnMultiPlayerClicked;
+			main_menu.OnLoadReplayClick = new () => 
+			{
+#if !ARI_SERVER
+				FileStream fs = scope FileStream();
+				fs.Open("replay.bh", .Read);
+				int32 size = (int32)fs.Length;
+				uint8[] d = new uint8[size];
+				Span<uint8> m = .(d);
+				fs.TryRead(m);
+				network.PlayReplay(m.Ptr, (int32)m.Length);
+				delete d;
+				netManager.ReplayMode = true;
+#endif
+			};
+
 			world.AddComponent(GameEntity, main_menu);
 
 			// in game gui
@@ -248,6 +264,13 @@ namespace bh
 
 		void OnMultiPlayerClicked()
 		{
+			// for test local
+			Lobby l = new Lobby();
+			l.serverIp = new String(IP);
+			l.serverPort = Port;
+			OnJoinedLobby(l);
+			return;
+
 			MultiTime =	Timer.Now();
 			if (Analytics != null)
 			{
@@ -315,8 +338,6 @@ namespace bh
 
 			delete GameEntity;
 
-			delete netManager;
-
 			if (Analytics != null)
 			{
 				Analytics.EndSession();
@@ -326,6 +347,7 @@ namespace bh
 
 			network.Stop();
 			delete network;
+			delete netManager;
 			Net.ShutdownNetwork();
 			delete world;
 		}

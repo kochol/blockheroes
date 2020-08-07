@@ -188,6 +188,10 @@ namespace bh.net
 				FileStream fs = scope FileStream();
 				fs.Open("replay.bh", .Create, .Write);
 				fs.TryWrite(.((uint8*)network.GetReplay(), network.GetReplaySize()));
+
+				// Compress the replay
+				int32 size = network.GetReplaySize();
+				let c = ari.io.Zip.Compress(network.GetReplay(), ref size);
 			}
 
 			Application.Exit = true;

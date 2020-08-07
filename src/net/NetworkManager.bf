@@ -264,7 +264,7 @@ namespace bh.net
 		// Handle input on client
 		public void HandleInput(KeyType _key)
 		{
-			if (!game_started)
+			if (!game_started || ReplayMode)
 				return;
 
 			if (key_time < KeyUpdateDelay && last_key == _key)

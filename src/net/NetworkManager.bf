@@ -210,6 +210,7 @@ namespace bh.net
 				{
 					var r = JSONSerializer.Serialize<String>(kv.value.PlayerScore);
 					game.teams.Add(new List<PlayerScore>());
+					r.Value.Replace('\"', '\'');
 					game.teams[kv.key].Add(new PlayerScore(lobby.Teams[kv.key][0], r.Value));
 				}
 				GameApp.profile_system.ServerSaveGame(game, new (res) => {

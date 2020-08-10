@@ -3,6 +3,8 @@ using System;
 using System.Collections;
 using bh.game;
 using System.IO;
+using ari.user;
+using JSON_Beef.Serialization;
 
 namespace bh.net
 {
@@ -17,6 +19,7 @@ namespace bh.net
 			delete _;
 		};
 		RPC m_rpc_on_connect;
+		RPC m_rpc_send_player_data_to_server;
 		RPC m_rpc_on_opponent_connect;
 		RPC m_rpc_on_opponent_connect_client;
 		RPC m_rpc_start_game;
@@ -42,6 +45,8 @@ namespace bh.net
 
 		bool is_in_game = false;
 		uint64 game_start_time;
+
+		Lobby lobby = null ~ delete _;
 
 		// time values
 		float time = 0;
@@ -174,27 +179,72 @@ namespace bh.net
 
 		void OnClientDisconnected(int32 client_id)
 		{
-			delete clients[client_id];
-			clients.Remove(client_id);
+			if (lost_client_id < 0)
+				lost_client_id = client_id;
 
 			ExitServer();
+
+			delete clients[client_id];
+			clients.Remove(client_id);
 		}
+
+		bool is_exit_server_called = false;
+		int32 lost_client_id = -1;
 
 		void ExitServer()
 		{
-			// Save the replay to the file
-			if (network.GetReplaySize() > 0)
+			if (is_exit_server_called)
+				return;
+			is_exit_server_called = true;
+
+			// Send the game result to profile server
+			if (game_started && clients.Count > 1 && lobby != null)
 			{
-				FileStream fs = scope FileStream();
-				fs.Open("replay.bh", .Create, .Write);
-				fs.TryWrite(.((uint8*)network.GetReplay(), network.GetReplaySize()));
+				Game game = scope Game();
+				game.winnerTeamId = lost_client_id == 0 ? 1 : 0;
+				game.teams = new List<List<PlayerScore>>();
+				game.version = new String(GameApp.NetworkVersion);
 
-				// Compress the replay
-				int32 size = network.GetReplaySize();
-				let c = ari.io.Zip.Compress(network.GetReplay(), ref size);
+				// Add players scores
+				for (var kv in clients)
+				{
+					var r = JSONSerializer.Serialize<String>(kv.value.PlayerScore);
+					game.teams.Add(new List<PlayerScore>());
+					game.teams[kv.key].Add(new PlayerScore(lobby.Teams[kv.key][0], r.Value));
+				}
+				GameApp.profile_system.ServerSaveGame(game, new (res) => {
+					// Now save the replay to server
+					if (res.StatusCode == 200)
+					{
+						let game_id = int64.Parse(res.Body);
+
+						// Save the replay to the file
+						if (network.GetReplaySize() > 0)
+						{
+							// Compress the replay
+							int32 size = network.GetReplaySize();
+							let c = ari.io.Zip.Compress(network.GetReplay(), ref size);
+
+							// Upload it to server
+							GameApp.profile_system.ServerUploadReplay(game_id, c, size, new (res) => {
+								ari.core.Memory.Free(c);
+								res.Dispose();
+								Application.Exit = true;
+							});
+						}
+					}
+					else
+					{
+						Console.WriteLine("Error: Error for saving game to server");
+						Application.Exit = true;
+					}
+					res.Dispose();
+				});
 			}
-
-			Application.Exit = true;
+			else
+			{
+				Application.Exit = true;
+			}
 		}
 
 		public this(ServerSystem _network, World _world)
@@ -212,6 +262,12 @@ namespace bh.net
 			network.OnClientDisconnected = new => this.OnClientDisconnected;
 			for (int i = 0; i < 50; i++)
 				blocks.Add((BlockType)rnd.Next(7));
+
+			// Get Lobby Data from server
+			if (GameApp.LobbyId > 0)
+				GameApp.profile_system.ServerGetLobby(GameApp.LobbyId, new (_lobby) => {
+					lobby = _lobby;
+				});
 #endif
 
 			// set RPCs
@@ -316,6 +372,20 @@ namespace bh.net
 					update_time = false;
 				}
 				c.value.Update(_elasped_time);
+
+				// check for game over on server
+#if ARI_SERVER
+				if (c.value.[Friend]state == .GameOver) 
+				{
+					if (lost_client_id < 0)
+						lost_client_id = c.key;
+
+					ExitServer();
+
+					return;
+				}
+#endif // ARI_SERVER
+
 			}
 
 			if (!update_time)

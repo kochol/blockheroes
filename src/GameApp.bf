@@ -29,6 +29,9 @@ namespace bh
 		bool MovedWithTouch;
 		bool MovedDownWithTouch;
 
+		// Version
+		public static readonly String NetworkVersion = "0.2";
+
 		// Canvas size
 		public static readonly int32 CanvasWidth = 458;
 
@@ -85,15 +88,13 @@ namespace bh
 			network.CreateServer(IP, Port);
 #endif
 
-			netManager = new NetworkManager(network, world);
-
 			Io.RegisterFileSystem("file", _fs);
 
 			// Profile server
 			HttpClientService http = new HttpClientService();
 			world.AddSystem(http);
 
-			profile_system = new ProfileSystem("https://blockheroesgame.com/api/", http);
+			profile_system = new ProfileSystem("https:///localhost:44327/api/", http);
 			profile_system.OnLoggedIn = new => OnLoggedIn;
 			profile_system.OnLoginFailed = new => OnLogginFailed;
 			profile_system.OnPlayerData = new => OnPlayerData;
@@ -104,9 +105,13 @@ namespace bh
 				profile_system.Login(Token);
 			}
 #else			
-			profile_system.Login();
+			profile_system.Login();//("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoic2VydmVyIiwiZXhwIjoxNTk3MDUzMTI1LCJpc3MiOiJibG9ja2hlcm9lcy1nYW1lLmNvbSIsImF1ZCI6ImJsb2NraGVyb2VzLWdhbWUuY29tIn0.Q24U0yoUxpVnOHV-BOyIbqI2Mys2lSSFsGbigdxztys");
 #endif
+
 			world.AddSystem(profile_system);
+
+			// Create the network manager
+			netManager = new NetworkManager(network, world);
 
 			// Game stuff
 			GameEntity = World.CreateEntity();
@@ -119,13 +124,18 @@ namespace bh
 			{
 #if !ARI_SERVER
 				FileStream fs = scope FileStream();
-				fs.Open("replay.bh", .Read);
+				fs.Open("replay.zip", .Read);
 				int32 size = (int32)fs.Length;
 				uint8[] d = new uint8[size];
 				Span<uint8> m = .(d);
 				fs.TryRead(m);
-				network.PlayReplay(m.Ptr, (int32)m.Length);
-				delete d;
+				profile_system.ServerUploadReplay(0, &d[0], size, new (res) => {
+					delete d;
+					res.Dispose();
+				});
+				var c = ari.io.Zip.Decompress(&d[0], ref size);
+				network.PlayReplay(c, size);
+				ari.core.Memory.Free(c);
 				netManager.ReplayMode = true;
 				*main_menu.Visible = false;
 #endif

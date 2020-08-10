@@ -6,7 +6,7 @@ ExtraPlatforms = ["Linux64", "armv7-none-linux-android21"]
 StartupProject = "block-heroes"
 
 [Configs.ServerDebug.Win64]
-ConfigSelections = {CurlBeef = {Config = "Debug"}, JSON_Beef = {Config = "Debug"}, BeefExtensionsLib = {Config = "Debug"}, corlib = {Config = "Debug"}}
+ConfigSelections = {CurlBeef = {Config = "Debug"}, JSON_Beef = {Config = "Debug"}, BeefExtensionsLib = {Config = "Debug"}}
 
 [[Configs.ServerDebug.Win64.DistinctOptions]]
 Filter = ""

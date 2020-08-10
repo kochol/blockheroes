@@ -38,10 +38,7 @@ namespace bh.game
 		bool CanApplyNewLine = false;
 
 		// Scores
-		int32[7] BlockCount;
-		int32[5] ClearedLines;
-		int32 ClearedLineCount;
-		int32 SendLineCount;
+		public Score PlayerScore = new Score() ~ delete _;
 
 		public void ApplyNewLine()
 		{
@@ -183,7 +180,7 @@ namespace bh.game
 					apply_new_line();
 
 				BlockType bt = blocks[last_block];
-				BlockCount[(int)bt]++;
+				PlayerScore.BlockCount[(int)bt]++;
 				last_block++;
 				// Create ghost block
 				if (is_player)
@@ -356,12 +353,12 @@ namespace bh.game
 							data[di, j] = null;
 						}
 
-						ClearedLineCount++;
+						PlayerScore.ClearedLineCount++;
 						clearedCount++;
 
 						cleard_block_combo++;
 						if (cleard_block_combo > 1)
-							SendLineCount ++;
+							PlayerScore.SendLineCount ++;
 #if ARI_SERVER
 						// send the punishment to the opponent
 						if (cleard_block_combo > 1 && send_punishment_from != null)
@@ -375,7 +372,7 @@ namespace bh.game
 				}
 			}
 			if (clearedCount > 0)
-				ClearedLines[clearedCount - 1]++;
+				PlayerScore.ClearedLines[clearedCount - 1]++;
 
 			// Apply the punishments
 			if (is_player)

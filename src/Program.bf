@@ -60,6 +60,7 @@ namespace bh
 			}
 			var app = scope GameApp();
 			ari.RunApplication(app);
+			Console.WriteLine("Game exited");
 		}
 	}
 }

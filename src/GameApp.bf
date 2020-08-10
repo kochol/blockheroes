@@ -94,7 +94,7 @@ namespace bh
 			HttpClientService http = new HttpClientService();
 			world.AddSystem(http);
 
-			profile_system = new ProfileSystem("https:///localhost:44327/api/", http);
+			profile_system = new ProfileSystem("https://blockheroesgame.com/api/", http);
 			profile_system.OnLoggedIn = new => OnLoggedIn;
 			profile_system.OnLoginFailed = new => OnLogginFailed;
 			profile_system.OnPlayerData = new => OnPlayerData;
@@ -212,7 +212,7 @@ namespace bh
 					netManager.HandleInput(.Down);
 				if (_event.key_code == .ARI_KEYCODE_SPACE && !_event.key_repeat)
 					netManager.HandleInput(.Drop);
-				if (netManager.game_started && _event.key_code == .ARI_KEYCODE_ESCAPE && !_event.key_repeat)
+				if (*main_menu.Visible == false && _event.key_code == .ARI_KEYCODE_ESCAPE && !_event.key_repeat)
 				{
 					// Show in game menu
 					*in_game_menu.Visible = !*in_game_menu.Visible;
@@ -290,13 +290,6 @@ namespace bh
 
 		void OnMultiPlayerClicked()
 		{
-			// for test local
-			Lobby l = new Lobby();
-			l.serverIp = new String(IP);
-			l.serverPort = Port;
-			OnJoinedLobby(l);
-			return;
-
 			MultiTime =	Timer.Now();
 			if (Analytics != null)
 			{

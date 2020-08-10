@@ -200,17 +200,24 @@ namespace bh.net
 			// Send the game result to profile server
 			if (game_started && clients.Count > 1 && lobby != null)
 			{
+				Console.WriteLine("Save the game");
 				Game game = scope Game();
 				game.winnerTeamId = lost_client_id == 0 ? 1 : 0;
 				game.teams = new List<List<PlayerScore>>();
 				game.version = new String(GameApp.NetworkVersion);
-
+				Console.WriteLine("Save the game 2");
 				// Add players scores
 				for (var kv in clients)
 				{
+					Console.WriteLine(kv.key);
 					var r = JSONSerializer.Serialize<String>(kv.value.PlayerScore);
+					Console.WriteLine(r.Value);
 					game.teams.Add(new List<PlayerScore>());
-					game.teams[kv.key].Add(new PlayerScore(lobby.Teams[kv.key][0], r.Value));
+					int i = game.teams.Count - 1;
+					Console.WriteLine(i);
+					Console.WriteLine(lobby.teams);
+					Console.WriteLine(lobby.teams[i][0]);
+					game.teams[i].Add(new PlayerScore(lobby.teams[i][0], r.Value));
 				}
 				GameApp.profile_system.ServerSaveGame(game, new (res) => {
 					// Now save the replay to server

@@ -105,7 +105,7 @@ namespace bh
 				profile_system.Login(Token);
 			}
 #else			
-			profile_system.Login();//("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoic2VydmVyIiwiZXhwIjoxNTk3MDUzMTI1LCJpc3MiOiJibG9ja2hlcm9lcy1nYW1lLmNvbSIsImF1ZCI6ImJsb2NraGVyb2VzLWdhbWUuY29tIn0.Q24U0yoUxpVnOHV-BOyIbqI2Mys2lSSFsGbigdxztys");
+			profile_system.Login();//("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoic2VydmVyIiwiZXhwIjoxNTk3MTQ3OTEyLCJpc3MiOiJibG9ja2hlcm9lcy1nYW1lLmNvbSIsImF1ZCI6ImJsb2NraGVyb2VzLWdhbWUuY29tIn0.1p4j0lhfZOlJROJdChgAxwkXgvqirxyQfZTXdalsvdQ");
 #endif
 
 			world.AddSystem(profile_system);
@@ -123,7 +123,20 @@ namespace bh
 			main_menu.OnLoadReplayClick = new () => 
 			{
 #if !ARI_SERVER
-				FileStream fs = scope FileStream();
+				profile_system.DownloadReplay(0 , new (res) => {
+					if (res.StatusCode == 200)
+					{
+						Console.WriteLine("{}", res.Body.Length);
+						int32 size = (int32)res.Body.Length;
+						var c = ari.io.Zip.Decompress((uint8*)res.Body.CStr(), ref size);
+						network.PlayReplay(c, size);
+						ari.core.Memory.Free(c);
+						netManager.ReplayMode = true;
+						*main_menu.Visible = false;
+					}
+					res.Dispose();
+				});
+				/*FileStream fs = scope FileStream();
 				fs.Open("replay.zip", .Read);
 				int32 size = (int32)fs.Length;
 				uint8[] d = new uint8[size];
@@ -133,11 +146,13 @@ namespace bh
 					delete d;
 					res.Dispose();
 				});
+				return;
 				var c = ari.io.Zip.Decompress(&d[0], ref size);
+				delete d;
 				network.PlayReplay(c, size);
 				ari.core.Memory.Free(c);
 				netManager.ReplayMode = true;
-				*main_menu.Visible = false;
+				*main_menu.Visible = false;*/
 #endif
 			};
 

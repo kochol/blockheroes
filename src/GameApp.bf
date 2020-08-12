@@ -126,7 +126,7 @@ namespace bh
 			main_menu.OnLoadReplayClick = new () => 
 			{
 #if !ARI_SERVER
-				profile_system.DownloadReplay(3 , new (res) => {
+				profile_system.DownloadReplay(5 , new (res) => {
 					if (res.StatusCode == 200)
 					{
 						Console.WriteLine("{}", res.Body.Length);
@@ -293,6 +293,12 @@ namespace bh
 
 		void OnMultiPlayerClicked()
 		{
+/*			Lobby lobby = new Lobby();
+			lobby.serverIp = new String(GameApp.IP);
+			lobby.serverPort = GameApp.Port;
+			OnJoinedLobby(lobby);
+			return;*/
+
 			MultiTime =	Timer.Now();
 			if (Analytics != null)
 			{

@@ -190,8 +190,11 @@ namespace bh.net
 
 			ExitServer();
 
-			delete clients[client_id];
-			clients.Remove(client_id);
+			if (clients.ContainsKey(client_id))
+			{
+				delete clients[client_id];
+				clients.Remove(client_id);
+			}
 		}
 
 		bool is_exit_server_called = false;

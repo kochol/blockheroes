@@ -54,6 +54,9 @@ namespace bh
 		// Profile server: The world will delete this on exit
 		public static ProfileSystem profile_system = null;
 
+		// This object is only valid on successful login on client.
+		public static Player Player = null ~ delete _;
+
 		// Game stuff
 		MainMenu main_menu;
 		InGameMenu in_game_menu;
@@ -123,7 +126,7 @@ namespace bh
 			main_menu.OnLoadReplayClick = new () => 
 			{
 #if !ARI_SERVER
-				profile_system.DownloadReplay(0 , new (res) => {
+				profile_system.DownloadReplay(3 , new (res) => {
 					if (res.StatusCode == 200)
 					{
 						Console.WriteLine("{}", res.Body.Length);
@@ -323,6 +326,8 @@ namespace bh
 		void OnPlayerData(Player player)
 		{
 			Console.WriteLine("Welcome {}", player.userName);
+			delete GameApp.Player;
+			GameApp.Player = player;
 
 			// Create Analytics
 			if (Analytics == null)
@@ -340,7 +345,7 @@ namespace bh
 				Analytics.[Friend]m_sPlayerID = pid;
 			}
 	
-			delete player;
+			
 			if (main_menu != null)
 				main_menu.Status = .LoggedIn;
 		}

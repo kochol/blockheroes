@@ -39,6 +39,7 @@ namespace bh.game
 
 		// Scores
 		public Score PlayerScore = new Score() ~ delete _;
+		public int64 PlayerId = 0;
 
 		public void ApplyNewLine()
 		{

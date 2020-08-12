@@ -19,7 +19,7 @@ namespace bh.net
 			delete _;
 		};
 		RPC m_rpc_on_connect;
-		RPC m_rpc_send_player_data_to_server;
+		RPC m_rpc_on_player_id_server;
 		RPC m_rpc_on_opponent_connect;
 		RPC m_rpc_on_opponent_connect_client;
 		RPC m_rpc_start_game;
@@ -67,6 +67,29 @@ namespace bh.net
 			my_client_id = client_id;
 			is_in_game = true;
 			game_start_time = Timer.Now();
+			network.CallRPC(m_rpc_on_player_id_server, client_id, GameApp.Player == null ? 0 : GameApp.Player.id);
+		}
+
+		void OnPlayerIdServer(int32 client_id, int64 player_id)
+		{
+			network.CallRPC(m_rpc_on_opponent_connect, client_id, player_id);
+			// send the blocks
+			for (int i = 0; i < blocks.Count; i++)
+				network.CallRPC(client_id, m_rpc_on_add_block_type, blocks[i], client_id);
+
+			for (var i in clients)
+			{
+				if (i.key == client_id)
+					continue;
+				network.CallRPC(client_id, m_rpc_on_opponent_connect_client, i.key, i.value.PlayerId);
+			}
+			if (clients.Count > 1)
+			{
+				// start the game
+				network.CallRPC(m_rpc_start_game);
+				// tell the server game started
+				GameApp.profile_system.ServerStartGame(GameApp.LobbyId);
+			}
 		}
 
 		void OnApplyPunishment(int32 _client_id)
@@ -128,13 +151,14 @@ namespace bh.net
 			network.CallRPC(m_rpc_on_apply_new_line_server);
 		}
 
-		void OnOpponentConnect(int32 client_id)
+		void OnOpponentConnect(int32 client_id, int64 playerId)
 		{
 			if (clients.ContainsKey(client_id))
 				return;
 
 			var map = new Map();
 			map.Init(world, client_id, my_client_id == client_id, blocks);
+			map.PlayerId = playerId;
 			if (ReplayMode && client_id == 0)
 				map.[Friend]canvas.Rect.x = 0;
 			map.send_punishment_from = new => OnPunishmentFrom;
@@ -157,24 +181,6 @@ namespace bh.net
 		void OnClientConnected(int32 client_id)
 		{
 			network.CallRPC(client_id, m_rpc_on_connect, client_id);
-			network.CallRPC(m_rpc_on_opponent_connect, client_id);
-			// send the blocks
-			for (int i = 0; i < blocks.Count; i++)
-				network.CallRPC(client_id, m_rpc_on_add_block_type, blocks[i], client_id);
-
-			for (var i in clients)
-			{
-				if (i.key == client_id)
-					continue;
-				network.CallRPC(client_id, m_rpc_on_opponent_connect_client, i.key);
-			}
-			if (clients.Count > 1)
-			{
-				// start the game
-				network.CallRPC(m_rpc_start_game);
-				// tell the server game started
-				GameApp.profile_system.ServerStartGame(GameApp.LobbyId);
-			}
 		}
 
 		void OnClientDisconnected(int32 client_id)
@@ -205,19 +211,13 @@ namespace bh.net
 				game.winnerTeamId = lost_client_id == 0 ? 1 : 0;
 				game.teams = new List<List<PlayerScore>>();
 				game.version = new String(GameApp.NetworkVersion);
-				Console.WriteLine("Save the game 2");
 				// Add players scores
 				for (var kv in clients)
 				{
-					Console.WriteLine(kv.key);
 					var r = JSONSerializer.Serialize<String>(kv.value.PlayerScore);
-					Console.WriteLine(r.Value);
 					game.teams.Add(new List<PlayerScore>());
 					int i = game.teams.Count - 1;
-					Console.WriteLine(i);
-					Console.WriteLine(lobby.teams);
-					Console.WriteLine(lobby.teams[i][0]);
-					game.teams[i].Add(new PlayerScore(lobby.teams[i][0], r.Value));
+					game.teams[i].Add(new PlayerScore(kv.value.PlayerId, r.Value));
 				}
 				GameApp.profile_system.ServerSaveGame(game, new (res) => {
 					// Now save the replay to server
@@ -279,8 +279,9 @@ namespace bh.net
 
 			// set RPCs
 			m_rpc_on_connect = Net.AddRPC<int32>("OnConnect", .Client, new => OnConnect, true);
-			m_rpc_on_opponent_connect = Net.AddRPC<int32>("OnOpponentConnect", .MultiCast, new => OnOpponentConnect, true);
-			m_rpc_on_opponent_connect_client = Net.AddRPC<int32>("OnOpponentConnectClient", .Client, new => OnOpponentConnect, true);
+			m_rpc_on_player_id_server = Net.AddRPC<int32, int64>("OnPlayerIdServer", .Server, new => OnPlayerIdServer, true);
+			m_rpc_on_opponent_connect = Net.AddRPC<int32, int64>("OnOpponentConnect", .MultiCast, new => OnOpponentConnect, true);
+			m_rpc_on_opponent_connect_client = Net.AddRPC<int32, int64>("OnOpponentConnectClient", .Client, new => OnOpponentConnect, true);
 			m_rpc_start_game = Net.AddRPC("StartGame", .MultiCast, new => StartGame, true);
 			m_rpc_on_input_server = Net.AddRPC<KeyType>("HandleInputServer", .Server, new => HandleInputServer, true);
 			m_rpc_on_input = Net.AddRPC<int32, KeyType, int32>("HandleInput", .MultiCast, new => HandleInput, true);
@@ -435,7 +436,7 @@ namespace bh.net
 		public void StartSinglePlayer()
 		{
 			OnConnect(0);
-			OnOpponentConnect(0);
+			OnOpponentConnect(0, GameApp.Player == null ? 0 : GameApp.Player.id);
 			StartGame();
 			blocks.Clear();
 			for (int i = 0; i < 50; i++)

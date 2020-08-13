@@ -312,6 +312,7 @@ namespace bh.net
 					GameApp.Analytics.Timing("Play", "Multi player", time);
 			}
 			is_in_game = false;
+			blocks.Clear();
 		}
 
 		// Server calls this to update the inputs

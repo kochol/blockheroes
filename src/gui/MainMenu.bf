@@ -6,6 +6,7 @@ using imgui_beef;
 namespace bh.gui
 {
 	delegate void OnButtonClickDelegate();
+	delegate void OnButtonClickDelegateWithId(int64 id);
 
 	public class MainMenu: ScriptGui
 	{
@@ -13,7 +14,7 @@ namespace bh.gui
 
 		public OnButtonClickDelegate OnSinglePlayerClick = null ~ delete _;
 		public OnButtonClickDelegate OnMultiPlayerClick = null ~ delete _;
-		public OnButtonClickDelegate OnLoadReplayClick = null ~ delete _;
+		public OnButtonClickDelegateWithId OnLoadReplayClick = null ~ delete _;
 
 		public enum MenuStatus
 		{
@@ -25,6 +26,7 @@ namespace bh.gui
 		public MenuStatus Status = .LoggingIn;
 
 		RegisterLogin login_form = null;
+		GameHistory game_history = null;
 
 		public this()
 		{
@@ -40,6 +42,11 @@ namespace bh.gui
 			{
 				_world.RemoveComponent(Handle.Owner, login_form, true);
 				login_form = null;
+			}
+			if (game_history != null)
+			{
+				_world.RemoveComponent(Handle.Owner, game_history, true);
+				game_history = null;
 			}
 		}
 
@@ -83,11 +90,6 @@ namespace bh.gui
 
 				ImGui.PopStyleColor(3);
 
-				if (ImGui.Button("Load replay"))
-				{
-					OnLoadReplayClick();
-				}
-
 				// Is searching for lobby
 				if (Status == .FindingLobby)
 				{
@@ -101,6 +103,19 @@ namespace bh.gui
 							GameApp.Analytics.Event("GUI", "Cancel search");
 							GameApp.Analytics.Timing("Lobby", "Found", (int32)Timer.ToMilliSeconds(Timer.Since(GameApp.MultiTime)));
 						}
+					}
+				}
+
+				if (Status == .LoggedIn && ImGui.Button("Show game history"))
+				{
+					if (game_history == null)
+					{
+						game_history = new GameHistory();
+						_world.AddComponent(Handle.Owner, game_history);
+					}
+					else if (!game_history.IsOpen)
+					{
+						game_history.IsOpen = true;
 					}
 				}
 

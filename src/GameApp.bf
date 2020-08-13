@@ -123,10 +123,10 @@ namespace bh
 			main_menu = new MainMenu();
 			main_menu.OnSinglePlayerClick = new => OnSinglePlayerClicked;
 			main_menu.OnMultiPlayerClick = new => OnMultiPlayerClicked;
-			main_menu.OnLoadReplayClick = new () => 
+			main_menu.OnLoadReplayClick = new (id) => 
 			{
 #if !ARI_SERVER
-				profile_system.DownloadReplay(5 , new (res) => {
+				profile_system.DownloadReplay(id , new (res) => {
 					if (res.StatusCode == 200)
 					{
 						Console.WriteLine("{}", res.Body.Length);
@@ -139,23 +139,6 @@ namespace bh
 					}
 					res.Dispose();
 				});
-				/*FileStream fs = scope FileStream();
-				fs.Open("replay.zip", .Read);
-				int32 size = (int32)fs.Length;
-				uint8[] d = new uint8[size];
-				Span<uint8> m = .(d);
-				fs.TryRead(m);
-				profile_system.ServerUploadReplay(0, &d[0], size, new (res) => {
-					delete d;
-					res.Dispose();
-				});
-				return;
-				var c = ari.io.Zip.Decompress(&d[0], ref size);
-				delete d;
-				network.PlayReplay(c, size);
-				ari.core.Memory.Free(c);
-				netManager.ReplayMode = true;
-				*main_menu.Visible = false;*/
 #endif
 			};
 

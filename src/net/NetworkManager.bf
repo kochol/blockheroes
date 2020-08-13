@@ -214,6 +214,7 @@ namespace bh.net
 				game.winnerTeamId = lost_client_id == 0 ? 1 : 0;
 				game.teams = new List<List<PlayerScore>>();
 				game.version = new String(GameApp.NetworkVersion);
+				game.gameDuration = GameTime;
 				// Add players scores
 				for (var kv in clients)
 				{
@@ -245,7 +246,7 @@ namespace bh.net
 					}
 					else
 					{
-						Console.WriteLine("Error: Error for saving game to server");
+						Logger.Error("Error when saving game to server");
 						Application.Exit = true;
 					}
 					res.Dispose();

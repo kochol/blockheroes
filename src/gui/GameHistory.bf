@@ -16,6 +16,7 @@ namespace bh.gui
 		protected override bool BeginRender()
 		{
 			CallEnd = IsOpen;
+			ImGui.SetNextWindowSize(.(600, 400));
 			if (IsOpen && ImGui.Begin("GameHistory", &IsOpen))
 			{
 				if (games == null)
@@ -57,22 +58,22 @@ namespace bh.gui
 					if (games.Games.Count > 0)
 					{
 						String tmp = scope String();
-						int32 player_team_id;
+						int32 player_team_id, opponent_team_id;
 						for (var g in games.Games)
 						{
 							// Opponent
-							tmp.Clear();
 							if (g.teams[0][0].playerId != GameApp.Player.id)
 							{
-								g.teams[0][0].playerId.ToString(tmp);
 								player_team_id = 1;
+								opponent_team_id = 0;
 							}
 							else
 							{
-								g.teams[1][0].playerId.ToString(tmp);
 								player_team_id = 0;
+								opponent_team_id = 1;
 							}
-							ImGui.Text(tmp); ImGui.NextColumn();
+							ImGui.Text(GameApp.profile_system.GetPlayerName(g.teams[opponent_team_id][0].playerId));
+							ImGui.NextColumn();
 
 							// Win or lose
 							if (player_team_id == g.winnerTeamId)

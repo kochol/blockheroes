@@ -1,22 +1,38 @@
 using System;
 using System.Collections;
+using JSON_Beef.Attributes;
 
 namespace bh.game
 {
 	[Reflect]
 	class Score
 	{
-		public List<int32> BlockCount = new List<int32>(7) ~ delete _;
-		public List<int32> ClearedLines = new List<int32>(4) ~ delete _;
+		public List<int32> BlockCount = null ~ delete _;
+		public List<int32> ClearedLines = null ~ delete _;
 		public int32 ClearedLineCount;
 		public int32 SendLineCount;
 
 		public this()
 		{
+			BlockCount = new List<int32>(7);
 			for (int i = 0; i < 7; i++)
 				BlockCount.Add(0);
+			ClearedLines = new List<int32>(4);
 			for (int i = 0; i < 4; i++)
 				ClearedLines.Add(0);
 		}
+
+		public this(bool DontInit)
+		{
+		}
+	}
+}
+
+namespace ari.user
+{
+	extension PlayerScore
+	{
+		[IgnoreSerialize]
+		public bh.game.Score Score = null ~ delete _;
 	}
 }

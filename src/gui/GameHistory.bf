@@ -2,6 +2,7 @@ using ari.gui;
 using imgui_beef;
 using System;
 using ari.user;
+using bh.game;
 
 namespace bh.gui
 {
@@ -39,6 +40,19 @@ namespace bh.gui
 						GameApp.profile_system.GetGames(0, 20, new (_games) => {
 							delete games;
 							games = _games;
+							for (var g in games.Games)
+							{
+								g.teams[0][0].score.Replace('\'', '\"');
+								g.teams[0][0].Score = new Score(true);
+								JSON_Beef.Serialization.JSONDeserializer.Deserialize<Score>(g.teams[0][0].score, g.teams[0][0].Score);
+								delete g.teams[0][0].score;
+								g.teams[0][0].score = null;
+								g.teams[1][0].score.Replace('\'', '\"');
+								g.teams[1][0].Score = new Score(true);
+								JSON_Beef.Serialization.JSONDeserializer.Deserialize<Score>(g.teams[1][0].score, g.teams[1][0].Score);
+								delete g.teams[1][0].score;
+								g.teams[1][0].score = null;
+							}
 						}, new (err) => {
 							isFailed = true;
 						});
@@ -87,7 +101,10 @@ namespace bh.gui
 							ImGui.NextColumn();
 
 							// score
-							ImGui.TextWrapped(g.teams[player_team_id][0].score); ImGui.NextColumn();
+							tmp.Clear();
+							tmp.AppendF("{} vs {}", g.teams[player_team_id][0].Score.SendLineCount,
+								g.teams[opponent_team_id][0].Score.SendLineCount);
+							ImGui.TextWrapped(tmp); ImGui.NextColumn();
 
 							// Download replay
 							tmp.Clear();

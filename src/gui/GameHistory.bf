@@ -94,7 +94,8 @@ namespace bh.gui
 							ImGui.PushID(tmp);
 							if (ImGui.Button("Play Replay"))
 							{
-								Console.WriteLine(g.id);
+								MainMenu.OnLoadReplayClick(g.id);
+								IsOpen = false;
 							}
 							ImGui.PopID();
 							ImGui.NextColumn();

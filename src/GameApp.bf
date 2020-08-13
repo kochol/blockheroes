@@ -123,7 +123,7 @@ namespace bh
 			main_menu = new MainMenu();
 			main_menu.OnSinglePlayerClick = new => OnSinglePlayerClicked;
 			main_menu.OnMultiPlayerClick = new => OnMultiPlayerClicked;
-			main_menu.OnLoadReplayClick = new (id) => 
+			MainMenu.OnLoadReplayClick = new (id) => 
 			{
 #if !ARI_SERVER
 				profile_system.DownloadReplay(id , new (res) => {

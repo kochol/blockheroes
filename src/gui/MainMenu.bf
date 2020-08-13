@@ -14,7 +14,7 @@ namespace bh.gui
 
 		public OnButtonClickDelegate OnSinglePlayerClick = null ~ delete _;
 		public OnButtonClickDelegate OnMultiPlayerClick = null ~ delete _;
-		public OnButtonClickDelegateWithId OnLoadReplayClick = null ~ delete _;
+		public static OnButtonClickDelegateWithId OnLoadReplayClick = null ~ delete _;
 
 		public enum MenuStatus
 		{

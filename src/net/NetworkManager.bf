@@ -173,6 +173,10 @@ namespace bh.net
 		void StartGame()
 		{
 			game_started = true;
+#if !ARI_SERVER
+			if (ReplayMode)
+				network.SetFastForward(false);
+#endif
 		}
 
 #if ARI_SERVER

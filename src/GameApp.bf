@@ -133,6 +133,7 @@ namespace bh
 						int32 size = (int32)res.Body.Length;
 						var c = ari.io.Zip.Decompress((uint8*)res.Body.CStr(), ref size);
 						network.PlayReplay(c, size);
+						network.SetFastForward(true);
 						ari.core.Memory.Free(c);
 						netManager.ReplayMode = true;
 						*main_menu.Visible = false;

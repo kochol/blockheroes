@@ -42,16 +42,15 @@ namespace bh.gui
 							games = _games;
 							for (var g in games.Games)
 							{
-								g.teams[0][0].score.Replace('\'', '\"');
-								g.teams[0][0].Score = new Score(true);
-								JSON_Beef.Serialization.JSONDeserializer.Deserialize<Score>(g.teams[0][0].score, g.teams[0][0].Score);
-								delete g.teams[0][0].score;
-								g.teams[0][0].score = null;
-								g.teams[1][0].score.Replace('\'', '\"');
-								g.teams[1][0].Score = new Score(true);
-								JSON_Beef.Serialization.JSONDeserializer.Deserialize<Score>(g.teams[1][0].score, g.teams[1][0].Score);
-								delete g.teams[1][0].score;
-								g.teams[1][0].score = null;
+								for (int i = 0; i < 2; i++)
+								{
+									g.teams[i][0].score.Replace('\'', '\"');
+									g.teams[i][0].Score = new Score(true);
+									JSON_Beef.Serialization.JSONDeserializer.Deserialize<Score>(g.teams[i][0].score, g.teams[i][0].Score);
+									g.teams[i][0].Score.CalcScore();
+									delete g.teams[i][0].score;
+									g.teams[i][0].score = null;
+								}
 							}
 						}, new (err) => {
 							isFailed = true;
@@ -102,8 +101,8 @@ namespace bh.gui
 
 							// score
 							tmp.Clear();
-							tmp.AppendF("{} vs {}", g.teams[player_team_id][0].Score.SendLineCount,
-								g.teams[opponent_team_id][0].Score.SendLineCount);
+							tmp.AppendF("{} vs {}", g.teams[player_team_id][0].Score.TotalScore,
+								g.teams[opponent_team_id][0].Score.TotalScore);
 							ImGui.TextWrapped(tmp); ImGui.NextColumn();
 
 							// Download replay

@@ -12,6 +12,9 @@ namespace bh.game
 		public int32 ClearedLineCount;
 		public int32 SendLineCount;
 
+		[IgnoreSerialize]
+		public int TotalScore;
+
 		public this()
 		{
 			BlockCount = new List<int32>(7);
@@ -24,6 +27,15 @@ namespace bh.game
 
 		public this(bool DontInit)
 		{
+		}
+
+		public void CalcScore()
+		{
+			TotalScore = 0;
+			for (int i = 0; i < 7; i++)
+				TotalScore += BlockCount[i];
+			TotalScore += ClearedLineCount * 10;
+			TotalScore += SendLineCount * 20;
 		}
 	}
 }

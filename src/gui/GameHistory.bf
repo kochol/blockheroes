@@ -3,6 +3,7 @@ using imgui_beef;
 using System;
 using ari.user;
 using bh.game;
+using ari;
 
 namespace bh.gui
 {
@@ -13,6 +14,7 @@ namespace bh.gui
 		GameList games = null ~ delete _;
 		bool gameListCalled = false;
 		bool isFailed = false;
+		int64 ViewGameDetail = 0;
 
 		protected override bool BeginRender()
 		{
@@ -51,17 +53,111 @@ namespace bh.gui
 									delete g.teams[i][0].score;
 									g.teams[i][0].score = null;
 								}
+								g.ParsePlayTime();
 							}
 						}, new (err) => {
 							isFailed = true;
 						});
 					}
 				}
+				else if (ViewGameDetail > 0)
+				{
+					// show the game detail
+					for (var g in games.Games)
+					{
+						if (g.id == ViewGameDetail)
+						{
+							let s = scope String();
+							s.Append("Date: ", g.playTime);
+							ImGui.Text(s);
+
+							s.Clear();
+							s.AppendF("Game time: {}", g.gameDuration);
+							ImGui.Text(s);
+
+							ImGui.Separator();
+
+							ImGui.Columns(2);
+
+							PlayerScore player_score, opponent_score;
+							if (g.teams[0][0].playerId != GameApp.Player.id)
+							{
+								player_score = g.teams[1][0];
+								opponent_score = g.teams[0][0];
+							}
+							else
+							{
+								player_score = g.teams[0][0];
+								opponent_score = g.teams[1][0];
+							}
+
+							ImGui.Text(GameApp.profile_system.GetPlayerName(player_score.playerId));
+							ImGui.NextColumn();
+
+							ImGui.Text(GameApp.profile_system.GetPlayerName(opponent_score.playerId));
+							ImGui.NextColumn();
+
+
+							s.Clear();
+							s.AppendF("Sent lines: {}", player_score.Score.SendLineCount);
+							ImGui.Text(s);
+							ImGui.NextColumn();
+
+							s.Clear();
+							s.AppendF("Sent lines: {}", opponent_score.Score.SendLineCount);
+							ImGui.Text(s);
+							ImGui.NextColumn();
+
+							s.Clear();
+							s.AppendF("Cleared lines: {}", player_score.Score.ClearedLineCount);
+							ImGui.Text(s);
+							ImGui.NextColumn();
+
+							s.Clear();
+							s.AppendF("Cleared lines: {}", opponent_score.Score.ClearedLineCount);
+							ImGui.Text(s);
+							ImGui.NextColumn();
+
+							for (var bt = typeof(BlockType).MinValue; bt <= typeof(BlockType).MaxValue; bt++)
+							{
+								s.Clear();
+								bt.ToString(s);
+								s.AppendF(": {}", player_score.Score.BlockCount[(int)bt]);
+								ImGui.Text(s);
+								ImGui.NextColumn();
+
+								s.Clear();
+								bt.ToString(s);
+								s.AppendF(": {}", opponent_score.Score.BlockCount[(int)bt]);
+								ImGui.Text(s);
+								ImGui.NextColumn();
+							}
+
+
+							if (ImGui.Button("Back"))
+							{
+								ViewGameDetail = 0;
+							}
+							ImGui.NextColumn();
+
+							if (ImGui.Button("Download replay"))
+							{
+								MainMenu.OnLoadReplayClick(g.id);
+								IsOpen = false;
+							}
+							ImGui.NextColumn();
+
+							ImGui.Columns();
+							break;
+						}
+					}
+				}
 				else
 				{
 					// show the game list
-					ImGui.Columns(4);
+					ImGui.Columns(5);
 
+					ImGui.Text("Date"); ImGui.NextColumn();
 					ImGui.Text("Opponent"); ImGui.NextColumn();
 					ImGui.Text("Status"); ImGui.NextColumn();
 					ImGui.Text("Score"); ImGui.NextColumn();
@@ -74,6 +170,17 @@ namespace bh.gui
 						int32 player_team_id, opponent_team_id;
 						for (var g in games.Games)
 						{
+							// Date
+							tmp.Clear();
+							tmp.AppendF("Date{}", g.id);
+							ImGui.PushID(tmp);
+							if (ImGui.Selectable(g.playTimeShort, false, .SpanAllColumns | .AllowItemOverlap))
+							{
+								ViewGameDetail = g.id;
+							}
+							ImGui.PopID();
+							ImGui.NextColumn();
+
 							// Opponent
 							if (g.teams[0][0].playerId != GameApp.Player.id)
 							{

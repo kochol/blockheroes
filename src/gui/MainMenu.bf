@@ -116,6 +116,7 @@ namespace bh.gui
 					else if (!game_history.IsOpen)
 					{
 						game_history.IsOpen = true;
+						game_history.[Friend]ViewGameDetail = 0;
 					}
 				}
 

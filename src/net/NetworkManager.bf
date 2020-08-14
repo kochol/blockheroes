@@ -358,7 +358,7 @@ namespace bh.net
 		public void AddBlockType(BlockType _type, int32 client_id)
 		{
 			if (!ReplayMode || (ReplayMode && client_id == 0))
-			blocks.Add(_type);
+				blocks.Add(_type);
 		}
 
 		public void Update(float _elasped_time)

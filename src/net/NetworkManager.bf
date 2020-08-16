@@ -476,6 +476,7 @@ namespace bh.net
 			my_client_id = -1;
 			game_started = false;
 			GamePaused = false;
+			ReplayMode = false;
 		}
 	}
 }

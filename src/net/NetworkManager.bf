@@ -50,6 +50,7 @@ namespace bh.net
 
 		// time values
 		float time = 0;
+		int time_reduced_times = 0;
 		float key_time = 0;
 		KeyType last_key = .Drop;
 		const float UpdateTime = 0.5f;
@@ -348,7 +349,15 @@ namespace bh.net
 				return;
 			key_time = 0;
 			if (_key == .Down) // comment this line for: Don't go down while player move the block
+			{
 				time = 0;
+				time_reduced_times = 0;
+			}
+			else if (time_reduced_times < 7)
+			{
+				time *= 0.5f;
+				time_reduced_times++;
+			}
 			last_key = _key;
 
 			network.CallRPC(m_rpc_on_input_server, _key);
@@ -386,6 +395,7 @@ namespace bh.net
 					(c.value.[Friend]state == .NeedNewBlock || c.value.[Friend]state == .GameOver))
 				{
 					time = 0;
+					time_reduced_times = 0;
 					update_time = false;
 				}
 				c.value.Update(_elasped_time);
@@ -413,6 +423,7 @@ namespace bh.net
 			if (time < UpdateTime)
 				return;
 			time = 0;
+			time_reduced_times = 0;
 
 #if ARI_SERVER
 			// check that we need to add new block

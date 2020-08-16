@@ -27,6 +27,7 @@ namespace bh.gui
 
 		RegisterLogin login_form = null;
 		GameHistory game_history = null;
+		ReplayControl replay_control = null;
 
 		public this()
 		{
@@ -47,6 +48,11 @@ namespace bh.gui
 			{
 				_world.RemoveComponent(Handle.Owner, game_history, true);
 				game_history = null;
+			}
+			if (replay_control != null)
+			{
+				_world.RemoveComponent(Handle.Owner, replay_control, true);
+				replay_control = null;
 			}
 		}
 
@@ -151,6 +157,16 @@ namespace bh.gui
 		protected override void EndRender()
 		{
 			ImGui.End();
+		}
+
+		public void ShowReplayControl(bool _open)
+		{
+			if (replay_control == null)
+			{
+				replay_control = new ReplayControl();
+				_world.AddComponent(Handle.Owner, replay_control);
+			}
+			replay_control.IsOpen = _open;
 		}
 	}
 }

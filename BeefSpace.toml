@@ -10,3 +10,6 @@ ConfigSelections = {CurlBeef = {Config = "Debug"}, JSON_Beef = {Config = "Debug"
 
 [[Configs.ServerDebug.Win64.DistinctOptions]]
 Filter = ""
+
+[Configs.Debug.Win64]
+EnableRealtimeLeakCheck = false

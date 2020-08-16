@@ -45,7 +45,7 @@ namespace bh
 #else
 		ClientSystem network = new ClientSystem();
 #endif
-		NetworkManager netManager;
+		public static NetworkManager netManager;
 		public static String IP = "127.0.0.1";
 		public static int32 Port = 55223;
 		public static String Token = null ~ delete _;
@@ -137,6 +137,7 @@ namespace bh
 						ari.core.Memory.Free(c);
 						netManager.ReplayMode = true;
 						*main_menu.Visible = false;
+						main_menu.ShowReplayControl(true);
 					}
 					res.Dispose();
 				});

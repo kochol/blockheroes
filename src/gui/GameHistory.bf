@@ -11,6 +11,7 @@ namespace bh.gui
 	{
 		public bool IsOpen = true;
 		bool CallEnd;
+
 		GameList games = null ~ delete _;
 		bool gameListCalled = false;
 		bool isFailed = false;

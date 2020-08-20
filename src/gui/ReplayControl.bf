@@ -13,8 +13,11 @@ namespace bh.gui
 		protected override bool BeginRender()
 		{
 			CallEnd = IsOpen;
-			ImGui.SetNextWindowSize(.(200, 34));
-			ImGui.SetNextWindowPos(.(10, 10));
+			if (IsOpen)
+			{
+				ImGui.SetNextWindowSize(.(200, 34));
+				ImGui.SetNextWindowPos(.(10, 10));
+			}
 			if (IsOpen && ImGui.Begin("Replay controls", &IsOpen, .NoDecoration))
 			{
 				if (ImGui.Button("||"))

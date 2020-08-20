@@ -20,8 +20,12 @@ namespace bh.gui
 		protected override bool BeginRender()
 		{
 			CallEnd = IsOpen;
-			ImGui.SetNextWindowSize(.(600, 400));
-			if (IsOpen && ImGui.Begin("GameHistory", &IsOpen))
+			if (IsOpen)
+			{
+				ImGui.SetNextWindowSize(.(600, 400), .FirstUseEver);
+				//ImGui.SetNextWindowPos(.(), .Always, .(0.5f, 0.5f));
+			}
+			if (IsOpen && ImGui.Begin("Game History", &IsOpen))
 			{
 				if (games == null)
 				{

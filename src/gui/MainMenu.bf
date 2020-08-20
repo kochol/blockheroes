@@ -167,6 +167,7 @@ namespace bh.gui
 				_world.AddComponent(Handle.Owner, replay_control);
 			}
 			replay_control.IsOpen = _open;
+			replay_control.[Friend]speed = 1;
 		}
 	}
 }

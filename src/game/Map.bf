@@ -351,7 +351,6 @@ namespace bh.game
 						{
 							canvas.RemoveChild(data[di, j]);
 							world.RemoveComponent(map_entity, ref data[di, j], true);
-							data[di, j] = null;
 						}
 
 						PlayerScore.ClearedLineCount++;

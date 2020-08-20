@@ -143,7 +143,6 @@ namespace bh
 				});
 #endif
 			};
-
 			world.AddComponent(GameEntity, main_menu);
 
 			// in game gui
@@ -166,6 +165,7 @@ namespace bh
 				{
 					Analytics.TrackScreenView("MainMenu");
 				}
+				main_menu.ShowReplayControl(false);
 			};
 			world.AddComponent(GameEntity, in_game_menu);
 

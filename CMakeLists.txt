@@ -15,7 +15,7 @@ fips_setup(PROJECT block_heroes)
     fips_begin_app(block_heroes cmdline)
 
         ari_setup()
-        ari_tex(assets/block.png ${texfmt})
+        ari_tex(assets/blocks.png ${texfmt})
         ari_tex(assets/menu.png ${texfmt})
         ari_assets()
 

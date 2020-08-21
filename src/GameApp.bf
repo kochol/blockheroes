@@ -11,6 +11,7 @@ using bh.gui;
 using curl;
 using System.IO;
 using ari.io;
+using ari.en;
 
 namespace bh
 {
@@ -61,6 +62,7 @@ namespace bh
 		// Game stuff
 		MainMenu main_menu;
 		InGameMenu in_game_menu;
+		public static Atlas BlocksAtlas = null ~ delete _;
 
 		public this()
 		{
@@ -171,6 +173,11 @@ namespace bh
 			world.AddComponent(GameEntity, in_game_menu);
 
 			world.AddEntity(GameEntity);
+
+			// Load texture atlas
+			Atlas.CreateAtlas("res:blocks.json", new (_atlas) => {
+				BlocksAtlas = _atlas;
+			});
 		}
 
 		public override void OnFrame(float _elapsedTime)

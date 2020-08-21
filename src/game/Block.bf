@@ -32,7 +32,8 @@ namespace bh.game
 		public const float BlockOffsetx = 5;
 
 		Sprite2D[] sprites = new Sprite2D[4];
-		static TextureHandle block_texture = .();
+		static Vector4[(int)typeof(BlockType).MaxValue + 2] blocksUv;
+		static bool UvLoaded = false;
 
 		// Block position
 		Vector2 position;
@@ -48,9 +49,17 @@ namespace bh.game
 
 		public static void LoadTexture()
 		{
-			if (block_texture.Handle == uint32.MaxValue)
+			if (!UvLoaded)
 			{
-				block_texture = Gfx.LoadTexture("res:block.png");
+				blocksUv[(int)BlockType.Box] = GameApp.BlocksAtlas.GetSpriteUV("Yellow.png");
+				blocksUv[(int)BlockType.I] = GameApp.BlocksAtlas.GetSpriteUV("Paleblue.png");
+				blocksUv[(int)BlockType.L] = GameApp.BlocksAtlas.GetSpriteUV("Purple.png");
+				blocksUv[(int)BlockType.RL] = GameApp.BlocksAtlas.GetSpriteUV("pblue.png");
+				blocksUv[(int)BlockType.RZ] = GameApp.BlocksAtlas.GetSpriteUV("orange.png");
+				blocksUv[(int)BlockType.T] = GameApp.BlocksAtlas.GetSpriteUV("Green.png");
+				blocksUv[(int)BlockType.Z] = GameApp.BlocksAtlas.GetSpriteUV("Red.png");
+				blocksUv[(int)typeof(BlockType).MaxValue + 1] = GameApp.BlocksAtlas.GetSpriteUV("blue.png"); // Punishment
+				UvLoaded = true;
 			}
 		}
 
@@ -227,7 +236,7 @@ namespace bh.game
 		{
 			var s = World.CreateSprite2D();
 			s.Scale.Set(BlockSize);
-			*s.Texture = block_texture;
+			*s.Texture = GameApp.BlocksAtlas.Texture;
 			return s;
 		}
 
@@ -257,7 +266,8 @@ namespace bh.game
 			// Create components
 			for (int i = 0; i < 4; i++)
 			{
-				*sprites[i].Color = block_color;
+				//*sprites[i].Color = block_color;
+				*sprites[i].UV = blocksUv[(int)_block_type];
 			}
 
 			UpdateBlockPos();

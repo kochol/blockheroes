@@ -114,13 +114,13 @@ namespace bh.game
 			// add walls
 			Block.LoadTexture();
 			left_wall = World.CreateSprite2D();
-			*left_wall.Texture = Block.[Friend]block_texture;
+			*left_wall.Texture = GameApp.BlocksAtlas.Texture;
 			left_wall.Scale.x = 5;
 			left_wall.Scale.y = 640;
 			left_wall.Position.x = 2.5f;
 			left_wall.Position.y = 320;
 			right_wall = World.CreateSprite2D();
-			*right_wall.Texture = Block.[Friend]block_texture;
+			*right_wall.Texture = GameApp.BlocksAtlas.Texture;
 			right_wall.Scale.x = 5;
 			right_wall.Scale.y = 640;
 			right_wall.Position.x = 327.5f;
@@ -281,7 +281,7 @@ namespace bh.game
 					continue;
 
 				data[i, 0] = Block.CreateBlockSprite();
-				*data[i, 0].Color = Color.BROWN;
+				*data[i, 0].UV = Block.[Friend]blocksUv[(int)typeof(BlockType).MaxValue + 1];
 				data[i, 0].Position.Set(i * Block.BlockSize + Block.BlockSizeHalf + Block.BlockOffsetx, Block.BlockSizeHalf);
 				canvas.AddChild(data[i, 0]);
 				world.AddComponent(map_entity, data[i, 0]);

@@ -10,6 +10,7 @@ using bh.net;
 using bh.gui;
 using curl;
 using System.IO;
+using ari.io;
 
 namespace bh
 {

@@ -1,0 +1,1 @@
+atlasc blue.png green.png orange.png paleblue.png pblue.png purple.png red.png yellow.png -o "..\blocks.json"

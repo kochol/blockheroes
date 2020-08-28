@@ -34,7 +34,9 @@ namespace bh.gui
 		{
 			if (tex_Buttons.Handle == uint32.MaxValue)
 			{
-				tex_Buttons = Gfx.LoadTexture("res:menu.png");
+				let s = scope String();
+				s.Append("res:menu.png");
+				tex_Buttons = Gfx.LoadTexture(s);
 			}
 		}
 
@@ -91,7 +93,7 @@ namespace bh.gui
 				else
 				{
 					ImGui.Image((void*)(uint)tex_Buttons.Index, .(214, 82), .(0.0234375f, 0.80078125f), .(0.0234375f + 0.41796875f, 0.80078125f + 0.16015625f),
-						.(0.2f, 0.2f, 0.2f, 1));
+						.(0.2f, 0.2f, 0.2f, 1));//, .(0.2f, 0.2f, 0.2f, 1));
 				}
 				ImGui.PopID();
 

@@ -4,14 +4,14 @@
 #include "sokol_app.h"
 #include "sokol_gfx.h"
 #include "sokol_glue.h"
-//#include "c99/io.h"
+//#include "c99/io.h"  
 #include "main.h"
 #include <unistd.h>
 #include <pthread.h>
 
  //void UpdateIo();
 
- sg_pass_action pass_action;
+ sg_pass_action pass_action;   
  pthread_t beef_thread;
 
 struct sapp_data
@@ -72,22 +72,27 @@ sapp_desc sokol_main(int argc, char* argv[]) {
  
     // Init Beef in thread
 	pthread_create(&beef_thread, nullptr, &thread_start, nullptr);
-	sleep(1);
-	// call ari main
-    //Main();
+	sleep(1); 
+
     GfxSetup* setup = GetGfxSetup();
+	while (setup == nullptr)  
+	{ 
+		sleep(1); 
+		setup = GetGfxSetup(); 
+	} 
+	
     desc.width = setup->window.Width;
 	desc.height = setup->window.Height;  
 	desc.fullscreen = setup->window.FullScreen;
 	desc.high_dpi = setup->window.HighDpi; 
 	desc.sample_count = setup->sample_count;
 	desc.swap_interval = setup->swap_interval;
-
+ 
 	desc.init_cb = ari_init_cb;
 	desc.frame_cb = ari_frame_cb;
 	desc.cleanup_cb = ari_cleanup_cb;
 	desc.event_cb = ari_event_cb;
 	desc.fail_cb = ari_fail_cb;
-
+ 
 	return desc;
 }

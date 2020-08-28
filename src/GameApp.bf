@@ -69,7 +69,7 @@ namespace bh
 			setup = new GfxSetup();
 			setup.window.Width = CanvasWidth * 2;
 			setup.window.Height = 640;
-			setup.window.HighDpi = true;
+			setup.window.HighDpi = false;
 			setup.swap_interval = 1;
 			// warning: Don't initialize anything here use OnInit function.
 		}
@@ -111,7 +111,7 @@ namespace bh
 				profile_system.Login(Token);
 			}
 #else			
-			profile_system.Login();//("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoic2VydmVyIiwiZXhwIjoxNTk3MTQ3OTEyLCJpc3MiOiJibG9ja2hlcm9lcy1nYW1lLmNvbSIsImF1ZCI6ImJsb2NraGVyb2VzLWdhbWUuY29tIn0.1p4j0lhfZOlJROJdChgAxwkXgvqirxyQfZTXdalsvdQ");
+			profile_system.Login();
 #endif
 
 			world.AddSystem(profile_system);
@@ -132,7 +132,6 @@ namespace bh
 				profile_system.DownloadReplay(id , new (res) => {
 					if (res.StatusCode == 200)
 					{
-						Console.WriteLine("{}", res.Body.Length);
 						int32 size = (int32)res.Body.Length;
 						var c = ari.io.Zip.Decompress((uint8*)res.Body.CStr(), ref size);
 						network.PlayReplay(c, size);
@@ -308,7 +307,9 @@ namespace bh
 
 		void OnLogginFailed(Easy.ReturnCode err)
 		{
-			Console.WriteLine(err);
+			let s = scope String();
+			err.ToString(s);
+			Logger.Error(s);
 			main_menu.Status = .LogginFailed;
 
 			// Create Analytics
@@ -324,7 +325,9 @@ namespace bh
 
 		void OnPlayerData(Player player)
 		{
-			Console.WriteLine("Welcome {}", player.userName);
+			let s = scope String();
+			s.AppendF("Welcome {}", player.userName);
+			Logger.Info(s);
 			delete GameApp.Player;
 			GameApp.Player = player;
 

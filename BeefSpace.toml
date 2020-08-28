@@ -1,6 +1,6 @@
 FileVersion = 1
 Projects = {block-heroes = {Path = "."}, Ariyana_beef = {Path = "../ariyana/Beef"}, CurlBeef = {Path = "../ariyana/Beef/deps/CurlBeef"}, JSON_Beef = {Path = "../ariyana/Beef/deps/JSON_Beef/lib"}, BeefExtensionsLib = {Path = "../ariyana/Beef/deps/Beef-Extensions-Lib"}, imgui-beef = {Path = "../ariyana/Beef/deps/imgui-beef/imgui-beef"}}
-ExtraPlatforms = ["Linux64", "armv7-none-linux-android21"]
+ExtraPlatforms = ["Linux64", "arm64-none-linux-android21", "armv7-none-linux-android21", "x86-none-linux-android21"]
 
 [Workspace]
 StartupProject = "block-heroes"

@@ -30,6 +30,7 @@ namespace bh
 		float touch_start_time;
 		bool MovedWithTouch;
 		bool MovedDownWithTouch;
+		int TouchBlock = -1;
 
 		// Version
 		public static readonly String NetworkVersion = "0.2";
@@ -221,6 +222,7 @@ namespace bh
 				MovedWithTouch = false;
 				MovedDownWithTouch = false;
 				touch_start_time = total_time;
+				TouchBlock = netManager.GetCurrentBlockId();
 			}
 			else if (_event.type == .ARI_EVENTTYPE_TOUCHES_MOVED)
 			{
@@ -238,7 +240,8 @@ namespace bh
 					netManager.HandleInput(.Right);
 					MovedWithTouch = true;
 				}
-				else if (!MovedWithTouch && total_time - touch_start_time > 0.4f)
+				else if (!MovedWithTouch && total_time - touch_start_time > 0.4f
+					&& TouchBlock == netManager.GetCurrentBlockId())
 				{
 					MovedDownWithTouch = true;
 					netManager.HandleInput(.Down);

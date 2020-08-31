@@ -489,5 +489,17 @@ namespace bh.net
 			GamePaused = false;
 			ReplayMode = false;
 		}
+
+		public int GetCurrentBlockId()
+		{
+			if (my_client_id >= 0)
+			{
+				if (clients.Count > my_client_id)
+				{
+					return clients[my_client_id].last_block;
+				}
+			}
+			return -1;
+		}
 	}
 }

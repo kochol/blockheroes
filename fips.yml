@@ -5,6 +5,6 @@
 ---
 imports:
     sokol:
-        git: https://github.com/floooh/sokol.git
+        git: https://github.com/kochol/sokol.git
     ariyana:
         git: https://github.com/kochol/ariyana.git

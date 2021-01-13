@@ -1,3 +1,4 @@
+#ifdef FIPS_ANDROID
 #define SOKOL_IMPL
 #define SOKOL_WIN32_FORCE_MAIN
 #define SOKOL_GLES3
@@ -96,3 +97,9 @@ sapp_desc sokol_main(int argc, char* argv[]) {
  
 	return desc;
 }
+#else
+void main()
+{
+	
+}
+#endif

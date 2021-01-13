@@ -1,5 +1,5 @@
 FileVersion = 1
-Projects = {block-heroes = {Path = "."}, Ariyana_beef = {Path = "../ariyana/Beef"}, CurlBeef = {Path = "../ariyana/Beef/deps/CurlBeef"}, JSON_Beef = {Path = "../ariyana/Beef/deps/JSON_Beef/lib"}, BeefExtensionsLib = {Path = "../ariyana/Beef/deps/Beef-Extensions-Lib"}, imgui-beef = {Path = "../ariyana/Beef/deps/imgui-beef/imgui-beef"}}
+Projects = {block-heroes = {Path = "."}, CurlBeef = {Path = "../ariyana/Beef/deps/CurlBeef"}, JSON_Beef = {Path = "../ariyana/Beef/deps/JSON_Beef/lib"}, BeefExtensionsLib = {Path = "../ariyana/Beef/deps/Beef-Extensions-Lib"}, imgui-beef = {Path = "../ariyana/Beef/deps/imgui-beef/imgui-beef"}, ari_2d = {Path = "../ariyana/Beef/ari_2d"}, ari_biz = {Path = "../ariyana/Beef/ari_biz"}, ari_core = {Path = "../ariyana/Beef/ari_core"}, ari_en = {Path = "../ariyana/Beef/ari_en"}, ari_gfx = {Path = "../ariyana/Beef/ari_gfx"}, ari_gui = {Path = "../ariyana/Beef/ari_gui"}, ari_io = {Path = "../ariyana/Beef/ari_io"}, ari_net = {Path = "../ariyana/Beef/ari_net"}, ari_user = {Path = "../ariyana/Beef/ari_user"}}
 ExtraPlatforms = ["Linux64", "arm64-none-linux-android21", "armv7-none-linux-android21", "x86-none-linux-android21"]
 
 [Workspace]
@@ -12,4 +12,4 @@ ConfigSelections = {CurlBeef = {Config = "Debug"}, JSON_Beef = {Config = "Debug"
 Filter = ""
 
 [Configs.Debug.Win64]
-EnableRealtimeLeakCheck = false
+ConfigSelections = {CurlBeef = {Config = "Release"}}

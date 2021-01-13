@@ -1,5 +1,5 @@
 FileVersion = 1
-Dependencies = {corlib = "*", Ariyana_beef = "*", imgui-beef = "*"}
+Dependencies = {corlib = "*", imgui-beef = "*", ari_2d = "*", ari_biz = "*", ari_gui = "*", ari_user = "*"}
 
 [Project]
 Name = "block-heroes"

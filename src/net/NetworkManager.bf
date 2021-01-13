@@ -5,6 +5,8 @@ using bh.game;
 using System.IO;
 using ari.user;
 using JSON_Beef.Serialization;
+using ari.net;
+using ari.en;
 
 namespace bh.net
 {

@@ -22,13 +22,8 @@ cd ari
 git clone https://github.com/kochol/blockheroes.git
 cd blockheroes
 fips build
-```
-
-Note: If you get compile errors you can ignore them
-
-```
 cd ..\ariyana\Beef\dist
-copy_dll.bat
+make_cari.bat
 ```
 
 Now you can open the blockheroes workspace with Beef IDE and run the game.

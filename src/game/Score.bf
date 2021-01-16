@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
-using JSON_Beef.Attributes;
+using Atma;
 
 namespace bh.game
 {
-	[Reflect]
+	[Serializable]
 	class Score
 	{
 		public List<int32> BlockCount = null ~ delete _;
@@ -12,7 +12,6 @@ namespace bh.game
 		public int32 ClearedLineCount;
 		public int32 SendLineCount;
 
-		[IgnoreSerialize]
 		public int TotalScore;
 
 		public this()
@@ -44,7 +43,6 @@ namespace ari.user
 {
 	extension PlayerScore
 	{
-		[IgnoreSerialize]
 		public bh.game.Score Score = null ~ delete _;
 	}
 }

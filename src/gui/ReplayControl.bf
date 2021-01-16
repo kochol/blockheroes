@@ -50,7 +50,9 @@ namespace bh.gui
 					speed = 4;
 				}
 
+#if !ARI_SERVER
 				GameApp.netManager.[Friend]network.SetReplaySpeed(speed);
+#endif
 				return true;
 			}
 

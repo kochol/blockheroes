@@ -4,9 +4,9 @@ using System.Collections;
 using bh.game;
 using System.IO;
 using ari.user;
-using JSON_Beef.Serialization;
 using ari.net;
 using ari.en;
+using Atma;
 
 namespace bh.net
 {
@@ -225,10 +225,11 @@ namespace bh.net
 				// Add players scores
 				for (var kv in clients)
 				{
-					var r = JSONSerializer.Serialize<String>(kv.value.PlayerScore);
+					var json = new String();
+					JsonConvert.Serialize(kv.value.PlayerScore, json);
 					game.teams.Add(new List<PlayerScore>());
 					int i = game.teams.Count - 1;
-					game.teams[i].Add(new PlayerScore(kv.value.PlayerId, r.Value));
+					game.teams[i].Add(new PlayerScore(kv.value.PlayerId, json));
 				}
 				GameApp.profile_system.ServerSaveGame(game, new (res) => {
 					// Now save the replay to server

@@ -4,6 +4,7 @@ using System;
 using ari.user;
 using bh.game;
 using ari;
+using Atma;
 
 namespace bh.gui
 {
@@ -53,7 +54,7 @@ namespace bh.gui
 								{
 									g.teams[i][0].score.Replace('\'', '\"');
 									g.teams[i][0].Score = new Score(true);
-									JSON_Beef.Serialization.JSONDeserializer.Deserialize<Score>(g.teams[i][0].score, g.teams[i][0].Score);
+									JsonConvert.Deserialize<Score>(g.teams[i][0].Score, g.teams[i][0].score);
 									g.teams[i][0].Score.CalcScore();
 									delete g.teams[i][0].score;
 									g.teams[i][0].score = null;

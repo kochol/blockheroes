@@ -1,3 +1,5 @@
+<div style="text-align:center"><img src="github_banner_transparent.png"/></div>
+
 # Block Heroes
 
 Multiplayer Tetrix like game written in [Beef](https://www.beeflang.org/) lang with [Ariyana](https://github.com/kochol/ariyana) game engine

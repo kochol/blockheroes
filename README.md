@@ -1,4 +1,4 @@
-<div style="text-align:center"><img src="blockheroes-logo.png"/></div>
+<p align="center"><img src="blockheroes-logo.png"/></p>
 
 # Block Heroes
 

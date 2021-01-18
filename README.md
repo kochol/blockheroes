@@ -1,4 +1,4 @@
-<div style="text-align:center"><img src="github_banner_transparent.png"/></div>
+<div style="text-align:center"><img src="blockheroes-logo.png"/></div>
 
 # Block Heroes
 

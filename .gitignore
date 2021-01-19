@@ -14,3 +14,4 @@ log_server.txt
 1log.txt
 *.txt
 *.basis
+libs/android/armeabi-v7a/libblock-heroes.a

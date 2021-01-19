@@ -10,11 +10,22 @@ project(block_heroes)
 
 fips_setup(PROJECT block_heroes)
 
-    set(CMAKE_CXX_STANDARD 17)
     
     fips_begin_app(block_heroes cmdline)
+    set(CMAKE_CXX_STANDARD 17)
+    ari_setup()    
 
-        ari_setup()
+if (FIPS_ANDROID)
+        fips_deps(
+            cari_2d
+            cari_core
+            cari_gui
+            cari_io
+            cari_net
+            block-heroes
+        )
+endif()
+
         ari_tex(assets/blocks.png ${texfmt})
         ari_tex(assets/menu.png ${texfmt})
         ari_assets()
@@ -26,8 +37,8 @@ fips_setup(PROJECT block_heroes)
         )
 
 if (FIPS_ANDROID)
-        link_directories(${CMAKE_SOURCE_DIR}/libs)
-        fips_libs(block-heroes cari curl z BeefRT ffi GLESv3 EGL android log)
+        link_directories(${CMAKE_SOURCE_DIR}/libs/android/${CMAKE_ANDROID_ARCH_ABI})
+        fips_libs(curl z BeefRT ffi GLESv3 EGL android log)
 endif()
 
     fips_end_app()

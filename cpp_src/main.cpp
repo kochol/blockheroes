@@ -1,24 +1,32 @@
-#ifdef FIPS_ANDROID
-#define SOKOL_IMPL
-#define SOKOL_WIN32_FORCE_MAIN
-#define SOKOL_GLES3
-#include "sokol_app.h"
+    #include <EGL/egl.h>
+    #if defined(SOKOL_GLES3)
+        #include <GLES3/gl3.h>
+    #else
+        #ifndef GL_EXT_PROTOTYPES
+            #define GL_GLEXT_PROTOTYPES
+        #endif
+        #include <GLES2/gl2.h>
+        #include <GLES2/gl2ext.h>
+    #endif
+
+#define SOKOL_APP_IMPL
+#define SOKOL_GFX_IMPL
 #include "sokol_gfx.h"
+#include "sokol_app.h"
+#define SOKOL_GLUE_IMPL
 #include "sokol_glue.h"
-//#include "c99/io.h"  
+#include "c99/io.h"  
 #include "main.h"
 #include <unistd.h>
 #include <pthread.h>
+#include "gfx/gfx.hpp"
 
- //void UpdateIo();
-
- sg_pass_action pass_action;   
- pthread_t beef_thread;
+pthread_t beef_thread;
 
 struct sapp_data
 {
-	_sapp_state* p_sapp;
-	_sapp_android_state_t* p_sapp_android_state;
+	_sapp_t* p_sapp;
+	_sapp_android_t* p_sapp_android_state;
 };
 
 extern "C" sapp_data CreateSg(sg_context_desc _desc);
@@ -26,15 +34,14 @@ sapp_data g_sapp_data;
 
 void ari_init_cb()
 { 
-/*	sg_desc desc;
+	sg_desc desc;
 	memset(&desc, 0, sizeof(sg_desc)); 
 	desc.context = sapp_sgcontext(); 
 
-	sg_setup(&sapp_sgcontext);
-*/
-	g_sapp_data = CreateSg(sapp_sgcontext());
-	*g_sapp_data.p_sapp = _sapp;
-	*g_sapp_data.p_sapp_android_state = _sapp_android_state;
+	sg_setup(&desc);
+
+	// Setup shaders
+	ari::gfx::SetupShaders();
 
     OnInit(); 
 }
@@ -47,7 +54,7 @@ void ari_frame_cb()
 void ari_cleanup_cb()
 {  
     OnCleanUp();
-	sg_shutdown();
+	//sg_shutdown();
 }
 
 void ari_event_cb(const sapp_event* event)
@@ -97,9 +104,3 @@ sapp_desc sokol_main(int argc, char* argv[]) {
  
 	return desc;
 }
-#else
-void main()
-{
-	
-}
-#endif

@@ -9,31 +9,22 @@
 #include "main.h"
 #include <unistd.h>
 #include <pthread.h>
+#include "gfx/gfx.hpp"
  
  //void UpdateIo();
 
  sg_pass_action pass_action;   
  pthread_t beef_thread;
-
-struct sapp_data
-{
-	_sapp_t* p_sapp;
-	_sapp_android_t* p_sapp_android_state;
-};
-
-extern "C" sapp_data CreateSg(sg_context_desc _desc);
-sapp_data g_sapp_data;
-
-void ari_init_cb()
-{ 
-/*	sg_desc desc;
+ 
+void ari_init_cb() 
+{  
+	sg_desc desc;
 	memset(&desc, 0, sizeof(sg_desc)); 
 	desc.context = sapp_sgcontext(); 
-	sg_setup(&sapp_sgcontext);
-*/
-	g_sapp_data = CreateSg(sapp_sgcontext());
-	*g_sapp_data.p_sapp = _sapp;
-	*g_sapp_data.p_sapp_android_state = _sapp.android;
+	sg_setup(&desc);
+
+	// Setup shaders	
+	ari::gfx::SetupShaders();
 
     OnInit(); 
 }
@@ -50,8 +41,7 @@ void ari_cleanup_cb()
 }
 
 void ari_event_cb(const sapp_event* event)
-{
-	*g_sapp_data.p_sapp = _sapp;
+{	
     OnEvent(event);
 } 
 

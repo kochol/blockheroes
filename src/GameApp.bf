@@ -30,6 +30,7 @@ namespace bh
 		float touch_start_time;
 		bool MovedWithTouch;
 		bool MovedDownWithTouch;
+		bool MouseClicked;
 		int TouchBlock = -1;
 
 		// Version
@@ -215,28 +216,30 @@ namespace bh
 					netManager.GamePaused = *in_game_menu.Visible;
 				}
 			}
-			else if (_event.type == .ARI_EVENTTYPE_TOUCHES_BEGAN)
+			else if (_event.type == .ARI_EVENTTYPE_TOUCHES_BEGAN || _event.type == .ARI_EVENTTYPE_MOUSE_DOWN)
 			{
-				touch_x = _event.touches[0].pos_x;
-				touch_y = _event.touches[0].pos_y;
+				touch_x = _event.type == .ARI_EVENTTYPE_TOUCHES_BEGAN ? _event.touches[0].pos_x : _event.mouse_x;
+				touch_y = _event.type == .ARI_EVENTTYPE_TOUCHES_BEGAN ? _event.touches[0].pos_y : _event.mouse_y;
 				MovedWithTouch = false;
 				MovedDownWithTouch = false;
+				MouseClicked = true;
 				touch_start_time = total_time;
 				TouchBlock = netManager.GetCurrentBlockId();
 			}
-			else if (_event.type == .ARI_EVENTTYPE_TOUCHES_MOVED)
+			else if (MouseClicked && (_event.type == .ARI_EVENTTYPE_TOUCHES_MOVED || _event.type == .ARI_EVENTTYPE_MOUSE_MOVE))
 			{
-				float dx = touch_x - _event.touches[0].pos_x;
+				float tx = _event.type == .ARI_EVENTTYPE_TOUCHES_MOVED ? _event.touches[0].pos_x : _event.mouse_x;
+				float dx = touch_x - tx;
 				int w = _event.window_width / 15;
 				if (dx > w)
 				{
-					touch_x = _event.touches[0].pos_x;
+					touch_x = tx;
 					netManager.HandleInput(.Left);
 					MovedWithTouch = true;
 				}
 				else if (dx < -w)
 				{
-					touch_x = _event.touches[0].pos_x;
+					touch_x = tx;
 					netManager.HandleInput(.Right);
 					MovedWithTouch = true;
 				}
@@ -247,12 +250,15 @@ namespace bh
 					netManager.HandleInput(.Down);
 				}
 			}
-			else if (_event.type == .ARI_EVENTTYPE_TOUCHES_ENDED)
+			else if (_event.type == .ARI_EVENTTYPE_TOUCHES_ENDED || _event.type == .ARI_EVENTTYPE_MOUSE_UP)
 			{
+				MouseClicked = false;
 				if (MovedWithTouch)
 					return;
-				float dx = touch_x - _event.touches[0].pos_x;
-				float dy = touch_y - _event.touches[0].pos_y;
+				float tx = _event.type == .ARI_EVENTTYPE_TOUCHES_ENDED ? _event.touches[0].pos_x : _event.mouse_x;
+				float ty = _event.type == .ARI_EVENTTYPE_TOUCHES_ENDED ? _event.touches[0].pos_y : _event.mouse_y;
+				float dx = touch_x - tx;
+				float dy = touch_y - ty;
 				if (dy < -200 && Math.Abs(dx) < 64)
 					netManager.HandleInput(.Drop);
 				else if (!MovedDownWithTouch && Math.Abs(dx) < 32)

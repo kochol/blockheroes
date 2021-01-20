@@ -11,6 +11,11 @@ BuildKind = "StaticLib"
 TargetName = "lib$(ProjectName)"
 RelocType = "PIC"
 
+[Configs.Debug.i686-none-linux-android21]
+BuildKind = "StaticLib"
+TargetName = "lib$(ProjectName)"
+RelocType = "PIC"
+
 [Configs.Release.armv7-none-linux-android21]
 BuildKind = "StaticLib"
 TargetName = "lib$(ProjectName)"

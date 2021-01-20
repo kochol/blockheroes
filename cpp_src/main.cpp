@@ -1,4 +1,4 @@
-#ifdef FIPS_ANDROID
+#ifdef ARI_ANDROID
 #define SOKOL_IMPL
 #define SOKOL_WIN32_FORCE_MAIN
 #define SOKOL_GLES3
@@ -9,7 +9,7 @@
 #include "main.h"
 #include <unistd.h>
 #include <pthread.h>
-
+ 
  //void UpdateIo();
 
  sg_pass_action pass_action;   
@@ -17,8 +17,8 @@
 
 struct sapp_data
 {
-	_sapp_state* p_sapp;
-	_sapp_android_state_t* p_sapp_android_state;
+	_sapp_t* p_sapp;
+	_sapp_android_t* p_sapp_android_state;
 };
 
 extern "C" sapp_data CreateSg(sg_context_desc _desc);
@@ -33,7 +33,7 @@ void ari_init_cb()
 */
 	g_sapp_data = CreateSg(sapp_sgcontext());
 	*g_sapp_data.p_sapp = _sapp;
-	*g_sapp_data.p_sapp_android_state = _sapp_android_state;
+	*g_sapp_data.p_sapp_android_state = _sapp.android;
 
     OnInit(); 
 }

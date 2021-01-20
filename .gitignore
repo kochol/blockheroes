@@ -15,3 +15,5 @@ log_server.txt
 *.txt
 *.basis
 libs/android/armeabi-v7a/libblock-heroes.a
+libs/android/x86/libcari.so
+libs/android/x86/libblock-heroes.a

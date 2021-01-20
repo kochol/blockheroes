@@ -457,13 +457,14 @@ namespace bh.net
 
 		public void StartSinglePlayer()
 		{
+			single_player = true;
+			Gfx.SetWindowSize(GameApp.CanvasWidth, 640, true);
 			OnConnect(0);
 			OnOpponentConnect(0, GameApp.Player == null ? 0 : GameApp.Player.id);
 			StartGame();
 			blocks.Clear();
 			for (int i = 0; i < 50; i++)
 				blocks.Add((BlockType)rnd.Next(7));
-			single_player = true;
 		}
 
 		public void ResetGame()
@@ -490,6 +491,7 @@ namespace bh.net
 			game_started = false;
 			GamePaused = false;
 			ReplayMode = false;
+			Gfx.SetWindowSize(GameApp.CanvasWidth * 2, 640, true);
 		}
 
 		public int GetCurrentBlockId()

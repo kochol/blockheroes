@@ -11,12 +11,11 @@
 #include <pthread.h>
 #include "gfx/gfx.hpp"
  
- //void UpdateIo();
 
  sg_pass_action pass_action;   
  pthread_t beef_thread;
  
-void ari_init_cb() 
+void ari_init_cb()
 {  
 	sg_desc desc;
 	memset(&desc, 0, sizeof(sg_desc)); 

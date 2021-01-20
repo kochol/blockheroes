@@ -33,7 +33,7 @@ namespace bh
 		int TouchBlock = -1;
 
 		// Version
-		public static readonly String NetworkVersion = "0.2";
+		public static readonly uint8 NetworkVersion = 2;
 
 		// Canvas size
 		public static readonly int32 CanvasWidth = 458;

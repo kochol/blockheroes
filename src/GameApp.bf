@@ -230,7 +230,7 @@ namespace bh
 			{
 				float tx = _event.type == .ARI_EVENTTYPE_TOUCHES_MOVED ? _event.touches[0].pos_x : _event.mouse_x;
 				float dx = touch_x - tx;
-				int w = (_event.window_width > _event.window_height ? _event.window_width : _event.window_height) / 15;
+				int w = (_event.window_width < _event.window_height ? _event.window_width : _event.window_height) / 15;
 				if (dx > w)
 				{
 					touch_x = tx;

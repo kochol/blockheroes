@@ -24,6 +24,8 @@ namespace bh
 		SceneSystem2D scene_system = new SceneSystem2D();
 		GuiSystem gui_system = new GuiSystem();
 		FileSystemLocal _fs = new FileSystemLocal();
+
+		// Touch parameters
 		float touch_x;
 		float touch_y;
 		float total_time = 0;
@@ -61,16 +63,22 @@ namespace bh
 		// This object is only valid on successful login on client.
 		public static Player Player = null ~ delete _;
 
-		// Game stuff
+		// GUI
 		MainMenu main_menu;
 		InGameMenu in_game_menu;
+
+		// Textures
 		public static Atlas BlocksAtlas = null ~ delete _;
+
+		// back ground
+		Sprite2D back_sp = null ~ delete _;
+		Camera2D back_cam = null ~ delete _;
 
 		public this()
 		{
 			setup = new GfxSetup();
-			setup.window.Width = CanvasWidth * 2;
-			setup.window.Height = 640;
+			setup.window.Width = 960;
+			setup.window.Height = 540;
 			setup.window.HighDpi = false;
 			setup.swap_interval = 1;
 			// warning: Don't initialize anything here use OnInit function.
@@ -173,6 +181,13 @@ namespace bh
 			};
 			world.AddComponent(GameEntity, in_game_menu);
 
+			// Create background
+			back_sp = World.CreateSprite2D();
+			*back_sp.Texture = Gfx.LoadTexture("res:back.png");
+			world.AddComponent(GameEntity, back_sp);
+			back_cam = World.CreateCamera2D();
+			world.AddComponent(GameEntity, back_cam);
+
 			world.AddEntity(GameEntity);
 
 			// Load texture atlas
@@ -194,6 +209,8 @@ namespace bh
 		{
 			base.OnEvent(_event, ref _handle);
 			world.Emit(_event, ref _handle);
+
+			back_sp.Scale.Set(_event.window_width, _event.window_height);
 
 			//bool isguiactive = imgui_beef.ImGui.IsAnyItemActive();
 

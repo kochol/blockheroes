@@ -184,6 +184,7 @@ namespace bh
 			// Create background
 			back_sp = World.CreateSprite2D();
 			*back_sp.Texture = Gfx.LoadTexture("res:back.png");
+			back_sp.Scale.Set(setup.window.Width, setup.window.Height);
 			world.AddComponent(GameEntity, back_sp);
 			back_cam = World.CreateCamera2D();
 			world.AddComponent(GameEntity, back_cam);

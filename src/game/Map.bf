@@ -102,10 +102,12 @@ namespace bh.game
 			}
 			world = _world;
 			camera = World.CreateCamera2D();
+			camera.Position.Set(GameApp.CanvasWidth / -2, -320);
 			canvas = World.CreateCanvas();
 			canvas.Rect.width = GameApp.CanvasWidth;
 			canvas.Rect.height = 640;
 			canvas.Rect.y = 0;
+
 			if (_is_player)
 				canvas.Rect.x = 0;
 			else

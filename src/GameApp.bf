@@ -35,12 +35,6 @@ namespace bh
 		bool MouseClicked;
 		int TouchBlock = -1;
 
-		// Version
-		public static readonly uint8 NetworkVersion = 2;
-
-		// Canvas size
-		public static readonly int32 CanvasWidth = 458;
-
 		// Analytics
 		public static GoogleAnalytics Analytics = null;
 		public static uint64 MultiTime;
@@ -79,6 +73,7 @@ namespace bh
 			setup = new GfxSetup();
 			setup.window.Width = 960;
 			setup.window.Height = 540;
+			setup.window.FullScreen = false;
 			setup.window.HighDpi = false;
 			setup.swap_interval = 1;
 			// warning: Don't initialize anything here use OnInit function.
@@ -87,6 +82,8 @@ namespace bh
 		public override void OnInit()
 		{
 			base.OnInit();
+
+			Gfx.SetWindowSize(Params.WindowSize.width, Params.WindowSize.height, true);
 
 			// Set clear color
 			Color clear_color = .(72, 78, 112, 255);
@@ -183,7 +180,7 @@ namespace bh
 
 			// Create background
 			back_sp = World.CreateSprite2D();
-			*back_sp.Texture = Gfx.LoadTexture("res:back.png");
+			*back_sp.Texture = Gfx.LoadTexture("res:bg.png");
 			back_sp.Scale.Set(setup.window.Width, setup.window.Height);
 			world.AddComponent(GameEntity, back_sp);
 			back_cam = World.CreateCamera2D();

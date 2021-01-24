@@ -36,6 +36,7 @@ endif()
         ari_tex(assets/blocks.png ${texfmt})
         ari_tex(assets/menu.png ${texfmt})
         ari_tex(assets/back.png ${texfmt})
+        ari_tex(assets/bg.png ${texfmt})
         ari_assets()
 
         fips_vs_warning_level(3)

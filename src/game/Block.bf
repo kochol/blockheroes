@@ -28,7 +28,7 @@ namespace bh.game
 		BlockType block_type;
 		Direction direction = .North;
 
-		public const float BlockSize = 32.0f;
+		public const float BlockSize = 37.5f;
 		public const float BlockSizeHalf = BlockSize / 2.0f;
 		public const float BlockOffsetx = 5;
 
